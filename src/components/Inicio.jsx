@@ -1,6 +1,6 @@
 function Inicio(){
     return (
-        <h1>HOLA</h1>
+        <h1><a>aa</a>hola</h1>
     );
 }
 
