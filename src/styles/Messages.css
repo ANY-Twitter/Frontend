@@ -1,0 +1,20 @@
+
+textarea{
+    resize: none;
+    width: 60%;
+    height: 70%;
+}
+
+
+.send-message > form{
+    display:grid;
+    height: 100%;
+    place-items: center;
+    grid-template-rows: 70px 3fr 1fr;
+}
+
+
+#to_user{
+    justify-self: end;
+    margin-right: 3%;
+}

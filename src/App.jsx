@@ -5,6 +5,9 @@ import './App.css'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Inicio from './components/Inicio'
 import Twitter from './components/Twitter'
+import Messages from './components/Messages'
+import NotFound from './components/NotFound'
+
 
 
 function App() {
@@ -15,10 +18,11 @@ function App() {
     <BrowserRouter>
 
       <Routes>
-        <Route path='/' element={<Twitter user={user} />}>
-          <Route index path='' element={<div>aaa</div>}/>
+        <Route path='/home' element={<Twitter user={user} />}>
+          <Route path='messages' element={<Messages/>}/>
 
         </Route> 
+        <Route path='*' element={<NotFound/>}></Route>
       </Routes>
 
     </BrowserRouter>
