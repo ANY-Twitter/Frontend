@@ -1,6 +1,6 @@
 import '../styles/Tweet.css'
 
-function Message(props){
+function Tweet(props){
     let {name, handle,data,srcImg,isMessage} = props;
 
 
@@ -25,4 +25,4 @@ function Message(props){
 
 }
 
-export default Message;
+export default Tweet;

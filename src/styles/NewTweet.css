@@ -1,0 +1,35 @@
+
+.modifiable-tweet {
+
+    display: grid;
+    grid-template-columns: fit-content(80px) 1fr  ;
+    column-gap:20px;
+    width: 380px;
+    border: solid;
+    padding-left: 16px;
+    padding-right: 16px;
+    padding-top: 12px;
+    padding-bottom: 12px;
+}
+
+.form-section > form{
+    display: grid;
+    justify-items: end;
+    grid-template-rows: 280px 1fr;
+}
+
+
+.form-section > form > textarea{
+
+    font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+    font-size:1.2rem;
+    resize: none;
+    width: 88%;
+    height: 230px;
+    padding: 10px;
+}
+
+
+/* .form-section > form > .button{ */
+    /* justify-self: end; */
+/* } */

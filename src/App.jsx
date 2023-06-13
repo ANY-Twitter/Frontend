@@ -7,7 +7,8 @@ import Inicio from './components/Inicio'
 import Twitter from './components/Twitter'
 import SendMessage from './components/SendMessage'
 import NotFound from './components/NotFound'
-import Messages from './components/Tweets'
+import Messages from './components/Messages'
+import Home from './components/Home'
 
 
 
@@ -21,9 +22,9 @@ function App() {
       <Routes>
         <Route path='/' element={<Twitter user={user} />}>
           <Route index element={<NotFound/>} />
-          <Route path='home' element={<></>}/>
-          <Route path='send-message' element={<SendMessage/>}/>
-          <Route path='messages' element={<Messages/>}/>
+          <Route path='home' element={<Home user={user}/>}/>
+          <Route path='send-message' element={<SendMessage user={user}/>}/>
+          <Route path='messages' element={<Messages user={user}/>}/>
         </Route> 
         <Route path='*' element={<NotFound/>}/>
       </Routes>

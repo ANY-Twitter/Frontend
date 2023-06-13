@@ -1,0 +1,10 @@
+.home-section{
+    overflow: auto;
+}
+
+.create-tweet{
+    display: grid;
+    place-content: center;
+    margin-bottom: 32px;
+}
+
