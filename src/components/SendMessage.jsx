@@ -1,7 +1,7 @@
-import '../styles/Messages.css'
+import '../styles/SendMessage.css'
 
 
-function Messages(props){
+function SendMessage(props){
 
 
 
@@ -19,4 +19,4 @@ function Messages(props){
 }
 
 
-export default Messages;
+export default SendMessage;

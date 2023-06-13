@@ -18,7 +18,7 @@ function Twitter(props){
     return (
         <div className="twitter">
             <div className="menu">
-                <div className="home-button"><Link to='/'>Home</Link></div>
+                <div className="home-button"><Link to='/home'>Home</Link></div>
                 <div className="user-section">
                     <img src={user_photo} alt="" />
                     <div className="user-info">
@@ -29,9 +29,9 @@ function Twitter(props){
 
                 <div className="groups"></div>
                 <div className="accesibility">
-                    <div className="messages">
-                        <Link className="button">Ver Buzón</Link>
-                        <Link className="button" to='messages'>Enviar mensaje</Link>
+                    <div className="messages-buttons">
+                        <Link className="button" to="messages">Ver Buzón</Link>
+                        <Link className="button" to="send-message">Enviar mensaje</Link>
                     </div>
                     <div className="sign-out">
                         <Link className="button">X</Link>

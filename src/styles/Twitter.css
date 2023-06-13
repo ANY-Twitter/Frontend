@@ -3,6 +3,7 @@
     grid-template-columns: 300px 1fr;
     height: 100%;
     width: 100%;
+    /* overflow: auto; */
 }
 
 .user-section{
@@ -32,6 +33,7 @@
     border-radius: 4px;
     display: block;
     width: fit-content;
+    user-select: none;
 }
 
 
@@ -41,7 +43,7 @@
 
 }
 
-.messages{
+.messages-buttons{
     display: grid;
     justify-content: center;
     align-items: center;
