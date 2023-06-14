@@ -1,0 +1,91 @@
+.twitter{
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    height: 100%;
+    width: 100%;
+    /* overflow: auto; */
+}
+
+.user-section{
+    display:grid;
+    grid-template-columns: 40% 1fr;
+    align-items: center;
+    justify-items: center;
+    color:white;
+}
+
+.handle{
+    font-weight: bold;
+}
+
+
+.user-section > img{
+    width: 78px;
+    height: 78px;
+    border-radius: 100%;
+}
+
+
+.button{
+    color: white;
+    background-color: #334155;
+    padding: 5px;
+    border-radius: 4px;
+    display: block;
+    width: fit-content;
+    user-select: none;
+}
+
+
+.accesibility{
+    display:grid;
+    row-gap: 5px;
+
+}
+
+.messages-buttons{
+    display: grid;
+    justify-content: center;
+    align-items: center;
+    column-gap: 12px;
+    grid-template-columns: auto auto;
+}
+
+.button:hover{
+    color:white;
+    transform: scale(1.05);
+}
+
+
+.sign-out{
+    display: grid;
+    place-content: center;
+}
+
+
+
+.menu{
+    background-color: #22d3ee;
+    /* height: 100vh; */
+    display: grid;
+    grid-template-rows: 50px 100px 1fr 120px;
+}
+
+.home-button{
+    display:grid;
+    place-content: center;
+}
+
+.home-button > a{
+    color:white;
+    display:block;
+    font-size: 1.3rem;
+
+}
+
+.home-button > a:hover{
+    color:white;
+    transform: scale(1.1);
+
+
+}

@@ -1,0 +1,20 @@
+
+/* .tweet-section{
+    overflow: auto;
+} */
+
+.tweets{
+    display: grid;
+    row-gap: 20px;
+    place-items: center;
+}
+
+
+.change-tweets{
+    margin-top: 15px;
+    margin-bottom: 15px;
+    display: grid;
+    justify-content: center;
+    grid-template-columns: repeat(2,fit-content(100px));
+    column-gap:20px;
+}

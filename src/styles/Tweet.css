@@ -1,0 +1,39 @@
+.message{
+    display: grid;
+}
+
+.tweet{
+    display: grid;
+    grid-template-columns: fit-content(80px) 1fr  ;
+    column-gap:20px;
+    width: 380px;
+    border: solid;
+    padding-left: 16px;
+    padding-right: 16px;
+    padding-top: 12px;
+    padding-bottom: 12px;
+
+}
+
+.tweet .main .user-info {
+    display:grid;
+    column-gap: 2px;
+    grid-template-columns: repeat(2,fit-content(100px)) ;
+    white-space: nowrap;
+    font-size:0.9rem;
+}
+
+
+
+
+.user-photo > img {
+    width: 48px;
+    height: 48px;
+    border-radius: 100%;
+}
+
+
+.data{
+    font-size:1.1rem;
+    text-align: justify;
+}
