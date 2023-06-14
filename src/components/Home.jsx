@@ -3,6 +3,8 @@ import Tweets from "./Tweets";
 import { Link } from "react-router-dom";
 import user_photo from "../img/test-username-photo.jpeg";
 import NewTweet from './NewTweet';
+import { useContext } from 'react';
+import { userContext } from '../App';
 
 function createSampleTweets(n) {
     let colection = [];
@@ -26,8 +28,8 @@ function createSampleTweets(n) {
 
 }
 
-function Home(props) {
-    const {user} = props;
+function Home() {
+    const [user, setUser] = useContext(userContext);
 
     const sampleTweets = createSampleTweets(10);
 
