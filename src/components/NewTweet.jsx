@@ -13,7 +13,7 @@ function NewTweet(props){
                 <img src={user_photo} alt="" />
             </div>
             <div className="form-section">
-                <form action="" novalidate>
+                <form action="" noValidate>
                     <textarea name="new_tweet_data" id="new_tweet_data" cols="30" rows="10" placeholder="¿Qué estas pensando?"></textarea>
                     <Link className="button">Crear</Link>
                 </form>
