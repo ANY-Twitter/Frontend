@@ -1,12 +1,13 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-function NotFound(){
+function NotFound(props){
+    const {redirection} = props;
     let navigate = useNavigate();
 
     useEffect(()=>{
         setTimeout(()=> {
-            navigate('/home');
+            navigate(redirection);
         },0);
     },[]);
 

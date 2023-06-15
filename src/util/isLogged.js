@@ -1,3 +1,3 @@
-const  isLogged = (user) => user != String(); 
+// const  isLogged = (user) => user != String(); 
 
-export default isLogged;
+// export default isLogged;
