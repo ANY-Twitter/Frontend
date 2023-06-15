@@ -1,18 +1,18 @@
 import { useEffect, useState } from "react";
 import { Link, Outlet } from "react-router-dom";
 
-function Inicio() {
+function SignUp() {
   const [correo, setCorreo] = useState("");
   const [clave, setClave] = useState("");
+  const [rClave, setRClave] = useState("");
 
-  useEffect(() => console.log(correo), [correo]);
-
-  async function Inicio_iniciar_sesion() {
-    let resp = await fetch("http://127.0.0.1:8000/usuarios", {
+  async function Consultar_Sign_Up() {
+    let resp = await fetch("http://127.0.0.1:8000/crearUsuario", {
       method: "POST",
       body: JSON.stringify({
         correo: correo,
         clave: clave,
+        rclave: rClave
       }),
       headers: {
         "Content-Type": "application/json",
@@ -24,13 +24,13 @@ function Inicio() {
 
   return (
     <div>
-      <h1>Bienvenido a ANY-TWITTER</h1>
-      <h2>Inicia sesión</h2>
+      <h1>ANY-TWITTER</h1>
+      <h2>Regístrese</h2>
       <p>Correo electrónico: </p>
       <input
         type="email"
-        name="Inicio_correo"
-        id="Inicio_correo"
+        name="correo"
+        id="correo"
         value={correo}
         onChange={(e) => setCorreo(e.target.value)}
       />
@@ -38,19 +38,25 @@ function Inicio() {
       <p>Contraseña: </p>
       <input
         type="password"
-        name="Inicio_clave"
-        id="Inicio_clave"
+        name="clave"
+        id="clave"
         value={clave}
         onChange={(e) => setClave(e.target.value)}
       />
       <br />
-      <button onClick={Inicio_iniciar_sesion}> Iniciar sesión</button>
+      <p>Repetir Contraseña: </p>
+      <input
+        type="password"
+        name="rclave"
+        id="rclave"
+        value={rClave}
+        onChange={(e) => setRClave(e.target.value)}
+      />
       <br />
-      <h2>No tiene cuenta?</h2>
-      <Link to="/signup" className="button">Registrese aquí</Link>
-      <Outlet />
+      <button className="button" onClick={Consultar_Sign_Up}>Registrar</button>
+      
     </div>
   );
 }
 
-export default Inicio;
+export default SignUp;

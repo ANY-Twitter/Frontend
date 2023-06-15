@@ -1,11 +1,17 @@
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, useNavigate } from "react-router-dom";
 import user_photo from "../img/test-username-photo.jpeg";
 import "../styles/Twitter.css";
 import { useContext, useEffect } from "react";
 import { userContext } from "../App";
 
 function Twitter() {
-  const [user, serUser] = useContext(userContext);
+  const [user, setUser] = useContext(userContext);
+  const navegar = useNavigate();
+
+  const cerrar_sesion = () => {
+    setUser(String());
+    navegar('/');
+  };
 
   return (
     <div className="twitter">
@@ -16,8 +22,10 @@ function Twitter() {
         <div className="user-section">
           <img src={user_photo} alt="" />
           <div className="user-info">
-            <div className="name">{user.name}</div>
-            <div className="handle">@{user.handle}</div>
+            {/* <div className="name">{user.name}</div> */}
+            <div className="name">{user}</div>
+            {/* <div className="handle">@{user.handle}</div> */}
+            <div className="handle">@{user}</div>
           </div>
         </div>
 
@@ -31,10 +39,7 @@ function Twitter() {
               Enviar mensaje
             </Link>
           </div>
-          <button>Cerrar Sesión</button>
-          <div className="sign-out">
-            <Link className="button">X</Link>
-          </div>
+          <button className="button" onClick={cerrar_sesion}>Cerrar Sesión</button>
         </div>
       </div>
       <Outlet />
