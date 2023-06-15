@@ -10,17 +10,18 @@ import NotFound from "./components/NotFound";
 import Messages from "./components/Messages";
 import Home from "./components/Home";
 import SignUp from "./components/SignUp";
+import { UserContext } from "./components/Contexts";
 
-export const userContext = createContext();
+
 function App() {
   const [user, setUser] = useState(String());
-  const [isLogged, setIsLogged] = useState(false);
+  const [isLogged, setIsLogged] = useState(true);
 
   return (
     <BrowserRouter>
-      <userContext.Provider value={[user, setUser]}>
+      <UserContext.Provider value={user}>
         <Routes>
-          <Route path="/" element={isLogged && <Twitter/>}>
+          <Route path="/" element={isLogged && <Twitter setIsLogged={setIsLogged}/>}>
             {
               isLogged ?  
               <>
@@ -31,14 +32,14 @@ function App() {
 
               <>
               <Route index element={<><NotFound redirection="sign-in"></NotFound></>}/>
-              <Route path="sign-in" element={<SignIn/>} />
+              <Route path="sign-in" element={<SignIn setUser={setUser}/>} />
               <Route path="sign-up" element={<SignUp />} />
               </>
             }
          </Route>
          <Route path="*" element={<NotFound redirection={isLogged ? '/home': '/sign-in'}/>} />
         </Routes>
-      </userContext.Provider>
+      </UserContext.Provider>
     </BrowserRouter>
   );
 }

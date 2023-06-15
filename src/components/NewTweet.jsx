@@ -1,9 +1,13 @@
 import { Link } from "react-router-dom";
 import user_photo from "../img/test-username-photo.jpeg";
 import '../styles/NewTweet.css'
+import './Contexts.jsx'
+import { useContext } from "react";
+import { UserContext } from "./Contexts.jsx";
 
 function NewTweet(props){
-    const {user} = props;
+
+    const user = useContext(UserContext);
 
 
 

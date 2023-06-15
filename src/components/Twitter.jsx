@@ -2,15 +2,16 @@ import { Link, Outlet, useNavigate } from "react-router-dom";
 import user_photo from "../img/test-username-photo.jpeg";
 import "../styles/Twitter.css";
 import { useContext, useEffect } from "react";
-import { userContext } from "../App";
+import { UserContext } from "./Contexts.jsx";
 
-function Twitter() {
-  const [user, setUser] = useContext(userContext);
+function Twitter(props) {
+  const {setIsLogged} = props;
+
+  const user  = useContext(UserContext);
   const navegar = useNavigate();
 
   const cerrar_sesion = () => {
-    setUser(String());
-    navegar('/');
+    setIsLogged(false);
   };
 
   return (

@@ -1,11 +1,11 @@
 import { useContext } from 'react';
 import '../styles/SendMessage.css'
-import { userContext } from '../App';
+import { UserContext } from './Contexts.jsx';
 
 
 function SendMessage(props){
 
-    const [user, setUser] = useContext(userContext);
+    const user = useContext(UserContext);
 
     return (
         <div className="send-message">

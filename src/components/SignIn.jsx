@@ -1,9 +1,8 @@
 import { useContext, useEffect, useState } from "react";
 import { Link, Outlet, redirect, useNavigate } from "react-router-dom";
-import { userContext } from "../App";
 
-function SignIn() {
-  const [_, setUser] = useContext(userContext);
+function SignIn(props) {
+  const {setUser} = props;
   const [correo, setCorreo] = useState("");
   const [clave, setClave] = useState("");
 
