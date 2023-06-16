@@ -1,0 +1,53 @@
+.sign-up{
+    /* overflow: auto; */
+    height: 100%;
+}
+
+form{
+    display: grid;
+    justify-items: center;
+    row-gap: 15px;
+}
+
+.input-row{
+    display: grid;
+    row-gap: 12px;
+    justify-items: center;
+}
+
+input[type="password"].invalid,
+input[type="text"].invalid,
+input[type="email"].invalid{
+    border-color:#e83333;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="email"]{
+    /* width: 240px; */
+    font-size: 1.2rem;
+    height: 24px;
+    padding: 8px;
+    border:#a3a3a3e5 solid 3px;
+    box-shadow: black 0px 0px 2px -1px;
+    border-radius: 8px;
+    font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+}
+
+input[type="email"]:focus,
+input[type="text"]:focus,
+input[type="password"]:focus{
+    outline:none;
+    border-color: #22d3ee;
+}
+
+
+
+#userPhoto{
+    display: none;
+}
+
+#prevImg{
+    width: 48px;
+    height: 48px;
+}

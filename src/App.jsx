@@ -15,7 +15,7 @@ import { UserContext } from "./components/Contexts";
 
 function App() {
   const [user, setUser] = useState(String());
-  const [isLogged, setIsLogged] = useState(true);
+  const [isLogged, setIsLogged] = useState(false);
 
   return (
     <BrowserRouter>
@@ -33,7 +33,7 @@ function App() {
               <>
               <Route index element={<><NotFound redirection="sign-in"></NotFound></>}/>
               <Route path="sign-in" element={<SignIn setUser={setUser}/>} />
-              <Route path="sign-up" element={<SignUp />} />
+              <Route path="sign-up" element={<SignUp setUser={setUser}/>} />
               </>
             }
          </Route>

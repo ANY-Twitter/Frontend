@@ -1,5 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { Link, Outlet, redirect, useNavigate } from "react-router-dom";
+import '../styles/SignIn.css'
 
 function SignIn(props) {
   const {setUser} = props;
@@ -28,7 +29,7 @@ function SignIn(props) {
   }
 
   return (
-    <div>
+    <div className="sign-in">
       <h1>Bienvenido a ANY-TWITTER</h1>
       <h2>Inicia sesión</h2>
       <p>Correo electrónico: </p>
@@ -49,10 +50,10 @@ function SignIn(props) {
         onChange={(e) => setClave(e.target.value)}
       />
       <br />
-      <button onClick={Inicio_iniciar_sesion}> Iniciar sesión</button>
+      <div className="button" onClick={Inicio_iniciar_sesion}> Iniciar sesión</div>
       <br />
       <h2>No tiene cuenta?</h2>
-      <Link to="/signup" className="button">Registrese aquí</Link>
+      <Link to="/sign-up" className="button">Registrese aquí</Link>
       <Outlet />
     </div>
   );

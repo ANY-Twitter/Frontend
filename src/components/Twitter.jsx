@@ -5,12 +5,12 @@ import { useContext, useEffect } from "react";
 import { UserContext } from "./Contexts.jsx";
 
 function Twitter(props) {
-  const {setIsLogged} = props;
+  const { setIsLogged } = props;
 
-  const user  = useContext(UserContext);
+  const user = useContext(UserContext);
   const navegar = useNavigate();
 
-  const cerrar_sesion = () => {
+  const signOut = () => {
     setIsLogged(false);
   };
 
@@ -40,7 +40,9 @@ function Twitter(props) {
               Enviar mensaje
             </Link>
           </div>
-          <button className="button" onClick={cerrar_sesion}>Cerrar Sesión</button>
+          <div className="sign-out">
+            <Link className="button" onClick={signOut}>Cerrar Sesión</Link>
+          </div>
         </div>
       </div>
       <Outlet />
