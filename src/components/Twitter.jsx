@@ -1,5 +1,5 @@
 import { Link, Outlet, useNavigate } from "react-router-dom";
-import user_photo from "../img/test-username-photo.jpeg";
+import default_photo from "../img/default.jpg";
 import "../styles/Twitter.css";
 import { useContext, useEffect } from "react";
 import { UserContext } from "./Contexts.jsx";
@@ -21,7 +21,8 @@ function Twitter(props) {
           <Link to="/home">Home</Link>
         </div>
         <div className="user-section">
-          <img src={user_photo} alt="" />
+          {/* <img src={user.srcProfilePicture === '' ? default_photo : user.srcProfilePicture} alt="" /> */}
+          <img src={default_photo} alt="" />
           <div className="user-info">
             <div className="name">{user.name}</div>
             <div className="handle">@{user.handle}</div>
