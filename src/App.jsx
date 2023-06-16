@@ -33,7 +33,7 @@ function App() {
               <>
               <Route index element={<><NotFound redirection="sign-in"></NotFound></>}/>
               <Route path="sign-in" element={<SignIn setUser={setUser}/>} />
-              <Route path="sign-up" element={<SignUp setUser={setUser}/>} />
+              <Route path="sign-up" element={<SignUp setUser={setUser} setIsLogged={setIsLogged}/>} />
               </>
             }
          </Route>

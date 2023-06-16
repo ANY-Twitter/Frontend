@@ -2,7 +2,8 @@ import '../styles/SignUp.css'
 import { useEffect, useState } from "react";
 import { Link, Outlet } from "react-router-dom";
 
-function SignUp() {
+function SignUp({setUser,setIsLogged}) {
+
   const [formData,setFormData] = useState({
     name: '',
     handle: '',
@@ -53,8 +54,12 @@ function SignUp() {
       method: "POST",
       body: form,
     });
-    let texto = await resp.text();
-    console.log(texto);
+    let user = await resp.json();
+
+    if(resp.status === 200){
+      setIsLogged(true);
+      console.log(user);
+    }
   }
 
   useEffect(()=> {
@@ -135,7 +140,7 @@ function SignUp() {
           />
         </div>
         <div className="input-row">
-          <label className='button' htmlFor="userPhoto">Inserta una imagen</label>
+          <label className='button' htmlFor="userPhoto">Inserta tu imagen de perfil</label>
           <input type="file" id="userPhoto" name="userPhoto" accept="image/*"
             onChange={(e) => {
               let file  = e.currentTarget.files[0];
