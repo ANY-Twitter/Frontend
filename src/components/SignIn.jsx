@@ -1,12 +1,15 @@
 import { useContext, useEffect, useState } from "react";
 import { Link, Outlet, redirect, useNavigate } from "react-router-dom";
 import '../styles/SignIn.css'
+import { genKey } from "../util/crypto";
 
 function SignIn({setUser, setIsLogged}) {
   const [handle, setHandle] = useState("");
   const [clave, setClave] = useState("");
 
   const navegar = useNavigate();
+
+  
 
   async function Inicio_iniciar_sesion(e) {
     e.preventDefault();

@@ -1,6 +1,7 @@
 import '../styles/SignUp.css'
 import { useEffect, useState } from "react";
 import { Link, Outlet } from "react-router-dom";
+import { genKey } from '../util/crypto';
 
 function SignUp({setUser,setIsLogged}) {
 
@@ -43,8 +44,7 @@ function SignUp({setUser,setIsLogged}) {
       return undefined;
     }
     const form = new FormData();
-    const encoder = new TextEncoder();
-    const decoder = new TextDecoder();
+
     form.append('name',formData.name);
     form.append('handle',formData.handle);
     form.append('password',formData.clave);
@@ -58,6 +58,7 @@ function SignUp({setUser,setIsLogged}) {
 
     if(resp.status === 200){
       setUser(user);
+      genKey(user);
       setIsLogged(true);
       console.log(user);
     }
