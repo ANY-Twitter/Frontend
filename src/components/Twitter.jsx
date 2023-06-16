@@ -23,10 +23,8 @@ function Twitter(props) {
         <div className="user-section">
           <img src={user_photo} alt="" />
           <div className="user-info">
-            {/* <div className="name">{user.name}</div> */}
-            <div className="name">{user}</div>
-            {/* <div className="handle">@{user.handle}</div> */}
-            <div className="handle">@{user}</div>
+            <div className="name">{user.name}</div>
+            <div className="handle">@{user.handle}</div>
           </div>
         </div>
 

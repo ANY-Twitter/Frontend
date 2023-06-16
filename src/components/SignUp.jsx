@@ -57,6 +57,7 @@ function SignUp({setUser,setIsLogged}) {
     let user = await resp.json();
 
     if(resp.status === 200){
+      setUser(user);
       setIsLogged(true);
       console.log(user);
     }

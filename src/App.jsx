@@ -14,7 +14,7 @@ import { UserContext } from "./components/Contexts";
 
 
 function App() {
-  const [user, setUser] = useState(String());
+  const [user, setUser] = useState({});
   const [isLogged, setIsLogged] = useState(false);
 
   return (
@@ -32,7 +32,7 @@ function App() {
 
               <>
               <Route index element={<><NotFound redirection="sign-in"></NotFound></>}/>
-              <Route path="sign-in" element={<SignIn setUser={setUser}/>} />
+              <Route path="sign-in" element={<SignIn setUser={setUser} setIsLogged={setIsLogged}/>} />
               <Route path="sign-up" element={<SignUp setUser={setUser} setIsLogged={setIsLogged}/>} />
               </>
             }
