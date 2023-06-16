@@ -2,6 +2,7 @@ import { useContext } from 'react';
 import { useState } from 'react';
 import '../styles/SendMessage.css'
 import { UserContext } from './Contexts.jsx';
+import { genKey, cipher } from '../util/crypto';
 
 
 function SendMessage(props) {
@@ -11,22 +12,7 @@ function SendMessage(props) {
 
     
 
-    const cipher = async () => {
-        const public_key_raw = JSON.parse(localStorage.getItem('public_key'));
-        const public_key = await crypto.subtle.importKey('jwk',public_key_raw,{
-                name: "RSA-OAEP",
-                hash: "SHA-256",
-            },false,["encrypt"]);
-        const enc = new TextEncoder();
-        const dec = new TextDecoder();
-
-        const ct = await crypto.subtle.encrypt({name: 'RSA-OAEP'},public_key,enc.encode(message));
-        setEncMessage(ct);
-
-        console.log(dec.decode(ct));
-
-
-    }
+   
 
     const decrypt = async () => {
 
