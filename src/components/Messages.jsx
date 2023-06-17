@@ -32,72 +32,60 @@ function createSampleTweets(n) {
 function Messages(props) {
 
     const user = useContext(UserContext);
-    const [tweets, setTweets] = useState([]);
+    const [fetchTweets, setFetchTweets] = useState([]);
 
     useEffect( () => {
 
-        let coll = []
+        const fetchear = async () => {
+            let coll = []
+    
+            let r = await fetch("http://localhost:8000/obtenerMensajes");
+            let hexes = await r.json();
 
-        fetch("http://localhost:8000/obtenerMensajes")
-        .then(r => r.json())
-        .then(hexes => {
-            // console.log(hexes)
             for(let doc_i = 0; doc_i < hexes.length; doc_i++){
                 hexes[doc_i]['hash'] = hexToBytes(hexes[doc_i]['hash'])
                 hexes[doc_i]['signedHash'] = hexToBytes(hexes[doc_i]['signedHash'])
                 hexes[doc_i]['message'] = hexToBytes(hexes[doc_i]['message'])
-                // console.log(hexes[doc_i])
+                console.log(hexes[doc_i])
 
-                decrypt(user, hexes[doc_i]['message'], hexes[doc_i]['hash'] )
-                .then(final_message => {
-                    if(final_message){
+                let final_message = await decrypt(user, hexes[doc_i]['message'], hexes[doc_i]['hash'] )
+                console.log(final_message)
+                if(final_message){
 
-                        fetch("http://localhost:8000/getKeys/" + final_message.handle)
-                        .then(r => r.json())
-                        .then(jsonR =>{
-                            console.log('sign_public')
-                            console.log(jsonR['sign_public'])
-                            verifyFirm(final_message.pt, hexes[doc_i]['signedHash'], jsonR['sign_public'])
-                            .then(isValid => {
-                                console.log(isValid)
+                    let r = await fetch("http://localhost:8000/getKeys/" + final_message.handle)
+                    let jsonR  =await r.json()
+                    
+                    console.log(jsonR['sign_public'])
+                    
+                    let isValid = await verifyFirm(final_message.pt, hexes[doc_i]['signedHash'], jsonR['sign_public']);
+                    
+                    console.log(isValid)
 
-                                coll.push({
-                                    id: hexes[doc_i]['_id'],
-                                    name: final_message.handle,
-                                    handle: final_message.handle,
-                                    data: final_message.pt,
-                                    srcImg: user_photo,
-                                    isTweet: false,
-                                })
-
-                            });
-                            console.log(final_message);
-
+                    if(isValid){
+                        coll.push({
+                            id: hexes[doc_i]['_id'],
+                            name: final_message.handle,
+                            handle: final_message.handle,
+                            data: final_message.pt,
+                            srcImg: user_photo,
+                            isTweet: false,
                         });
                     }
-                })
+
+                    
+                    console.log(final_message);
+
+                }
+                
             }
 
-            setTweets(coll);
-            console.log(tweets)
-            // // [hash, message, signedHash]
-            // for(let i = 0; i<hexes.length; i++){
-            //     hexes[i] = hexToBytes(hexes[i])
-            //     console.log(hexes[i])
-            // }
-            // console.log(hexes)
+            setFetchTweets(coll);
+            console.log(fetchTweets)
+            
+        }
 
-            // decrypt(user, hexes[1], hexes[0] )
-            // .then(final_message => {
-            //     if(final_message){
-            //         verifyFirm(final_message.pt,hexes[2])
-            //         .then(isValid => {
-            //             console.log(isValid)
-            //         });
-            //         console.log(final_message);
-            //     }
-            // })
-        })     
+        fetchear();
+
     },[])
 
     // const sampleTweets = createSampleTweets(10);
@@ -106,7 +94,7 @@ function Messages(props) {
     return (
         <div className="messages-section">
             <h2>Messages</h2>
-            <Tweets tweets={tweets}/>
+            <Tweets tweets={fetchTweets}/>
             {/* <Tweets tweets={sampleTweets}/> */}
         </div>
     )
