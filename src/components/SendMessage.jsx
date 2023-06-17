@@ -23,7 +23,7 @@ function SendMessage(props) {
 
     const submit = async (e) => {
         e.preventDefault();
-        if(handleTo === '' || handleTo == user.handle) return undefined;
+        if(handleTo === '' || handleTo == user.handle || message.length > maxSize()) return undefined;
         let resp = await fetch("http://127.0.0.1:8000/getKeys/" + handleTo, {
             method: "GET",
         });
@@ -63,7 +63,7 @@ function SendMessage(props) {
                 <input onChange={updateHandleTo} type="text" name="to_user" id="to_user" value={handleTo} />
                 <textarea maxLength={maxSize()} name="user_message" onChange={updateMessage} value={message} id="user_message" cols="30" rows="10"></textarea>
                 <button onClick={submit} className='button'>Enviar</button>
-                <div onClick={async () => { genKey(user); }} className="button">Enviar</div>
+                {/* <div onClick={async () => { genKey(user); }} className="button">Enviar</div>
                 <div onClick={async () => {
                     const {ct,hash, signedHash} = await cipher(user, message);
                     console.log(ct);
@@ -82,7 +82,7 @@ function SendMessage(props) {
 
 
                     }
-                }} className="button">Enviar3</div>
+                }} className="button">Enviar3</div> */}
             </form>
 
         </div>

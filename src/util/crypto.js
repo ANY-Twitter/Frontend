@@ -208,33 +208,38 @@ export const decrypt = async (user, ct, hash) => {
   // sign_key_raw = keys.sign.public;
 
   const dec = new TextDecoder();
-  const pt_raw = await crypto.subtle.decrypt(
-    { name: "RSA-OAEP" },
-    private_key,
-    ct.slice(0,512)
-  );
+  let pt_raw;
+
+  let userHandle_raw;
+  try {
+    userHandle_raw = await crypto.subtle.decrypt(
+      { name: "RSA-OAEP" },
+      private_key,
+      ct.slice(512)
+    );
+    pt_raw = await crypto.subtle.decrypt(
+      { name: "RSA-OAEP" },
+      private_key,
+      ct.slice(0, 512)
+    );
+  } catch (error) {
+    return null;
+  }
 
   const pt = new Uint8Array(pt_raw);
-
-  const userHandle_raw = await crypto.subtle.decrypt(
-    { name: "RSA-OAEP" },
-    private_key,
-    ct.slice(512)
-  );
   const userHandle = new Uint8Array(userHandle_raw);
 
   const hashed_pt_raw = await crypto.subtle.digest("SHA-256", pt);
   const hashed_pt = new Uint8Array(hashed_pt_raw);
 
-  
   const messageIsForUser =
     hashed_pt.length == hash.length &&
     hashed_pt.reduce((prev, curr, index) => prev && curr == hash[index], 1);
 
-  console.log(dec.decode(pt),pt.length);
-  console.log(dec.decode(userHandle),userHandle.length);
+  // console.log(dec.decode(pt), pt.length);
+  // console.log(dec.decode(userHandle), userHandle.length);
 
-  return messageIsForUser 
+  return messageIsForUser
     ? { pt: dec.decode(pt), handle: dec.decode(userHandle) }
     : null;
 };

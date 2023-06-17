@@ -35,8 +35,7 @@ function Tweets(props) {
             <div className="tweets">
                 {
                     tweets.map((mess) => {
-
-                        return <Tweet key={mess.id} {...mess} />;
+                        return mess && <Tweet key={mess.id} {...mess} />;
                     })
                 }
 

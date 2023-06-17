@@ -15,6 +15,16 @@
 
 }
 
+.main{
+    display: grid;
+}
+.tweet .data{
+
+    /* text-overflow: ellipsis; */
+    word-wrap: break-word;
+    overflow: hidden;
+}
+
 .tweet .main .user-info {
     display:grid;
     column-gap: 2px;

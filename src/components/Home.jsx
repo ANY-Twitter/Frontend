@@ -14,7 +14,8 @@ function createSampleTweets(n) {
         handle: 'Ereiclo',
         data: `Lorem Ipsum is simply dummy text of the 
                 printing and typesetting industry. Lorem Ipsum 
-                has been the industry`,
+                has been the industry Lorem Ipsum is simply dummy text of the 
+                printing and typesetting industry. `,
         srcImg: user_photo,
         isTweet: false,
     };
