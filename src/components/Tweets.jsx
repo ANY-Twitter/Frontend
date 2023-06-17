@@ -24,11 +24,22 @@ function Tweets(props) {
                 decrypt(user, hexes[doc_i]['message'], hexes[doc_i]['hash'] )
                 .then(final_message => {
                     if(final_message){
-                        verifyFirm(final_message.pt, hexes[doc_i]['signedHash'])
-                        .then(isValid => {
-                            console.log(isValid)
+
+                        fetch("http://localhost:8000/getKeys/" + final_message.handle)
+                        .then(r => r.json())
+                        .then(jsonR =>{
+                            console.log('sign_public')
+                            console.log(jsonR['sign_public'])
+                            verifyFirm(final_message.pt, hexes[doc_i]['signedHash'], jsonR['sign_public'])
+                            .then(isValid => {
+                                console.log(isValid)
+
+                                
+
+                            });
+                            console.log(final_message);
+
                         });
-                        console.log(final_message);
                     }
                 })
             }
