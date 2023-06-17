@@ -1,5 +1,15 @@
 export const maxSize = () =>  4096/8 - 2*(256/8) - 2 ;
 
+export const hexToBytes = (hex) => {
+  let bytes = [];
+
+  for (var c = 0; c < hex.length; c += 2) {
+    bytes.push(parseInt(hex.substr(c, 2), 16));
+  }
+
+  return new Uint8Array(bytes);
+};
+
 export const genKey = async () => {
   const cipherKeyPair = await window.crypto.subtle.generateKey(
     {
