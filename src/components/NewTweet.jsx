@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import default_photo from "../img/default.jpg";
 import user_photo from "../img/test-username-photo.jpeg";
 import '../styles/NewTweet.css'
 import './Contexts.jsx'
@@ -14,7 +15,7 @@ function NewTweet(props){
     return (
         <div className="modifiable-tweet">
             <div className="user-photo">
-                <img src={user_photo} alt="" />
+                <img src={default_photo} alt="" />
             </div>
             <div className="form-section">
                 <form action="" noValidate>

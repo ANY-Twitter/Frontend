@@ -13,6 +13,7 @@ function Tweets(props) {
             <div className="tweets">
                 {
                     tweets.map((mess) => {
+
                         return <Tweet key={mess.id} {...mess} />;
                     })
                 }

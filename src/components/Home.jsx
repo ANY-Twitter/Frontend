@@ -1,4 +1,5 @@
 import '../styles/Home.css'
+import default_photo from "../img/default.jpg";
 import Tweets from "./Tweets";
 import { Link } from "react-router-dom";
 import user_photo from "../img/test-username-photo.jpeg";

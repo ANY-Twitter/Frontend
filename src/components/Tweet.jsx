@@ -1,14 +1,14 @@
 import '../styles/Tweet.css'
 
-function Tweet(props){
-    let {name, handle,data,srcImg,isMessage} = props;
+function Tweet({name, handle,data,srcImg,isMessage}){
 
 
     return (
         <div className="tweet">
-            <div className="user-photo">
+            {/* <div className="user-photo">
                 <img src={srcImg} alt="" />
-           </div>
+            </div> */}
+            <div></div>
            <div className="main">
                 <div className="user-info">
                     <div className="name">{name}</div>
