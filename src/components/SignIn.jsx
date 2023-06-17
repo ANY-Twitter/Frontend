@@ -23,9 +23,11 @@ function SignIn({setUser, setIsLogged}) {
         "Content-Type": "application/json",
       },
     });
+
     let user = await resp.json();
     console.log(user, resp.status);
     if(resp.status == 200){
+      
       setIsLogged(true);
       setUser(user);
       navegar('/home');

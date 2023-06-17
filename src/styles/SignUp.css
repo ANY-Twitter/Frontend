@@ -15,12 +15,15 @@ form{
     justify-items: center;
 }
 
+textarea.invalid
 input[type="password"].invalid,
 input[type="text"].invalid,
 input[type="email"].invalid{
     border-color:#e83333;
 }
 
+
+textarea,
 input[type="text"],
 input[type="password"],
 input[type="email"]{
@@ -34,6 +37,17 @@ input[type="email"]{
     font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
 }
 
+
+textarea{
+    resize: none;
+    width: 60%;
+    height: 70%;
+    font-size: 1.3rem;
+    padding: 20px;
+
+}
+
+textarea:focus,
 input[type="email"]:focus,
 input[type="text"]:focus,
 input[type="password"]:focus{

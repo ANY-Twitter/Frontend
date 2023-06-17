@@ -43,12 +43,16 @@ function SignUp({setUser,setIsLogged}) {
       console.log('bien',existErrors());
       return undefined;
     }
+
+    const keys = await genKey();
+
     const form = new FormData();
 
     form.append('name',formData.name);
     form.append('handle',formData.handle);
     form.append('password',formData.clave);
     form.append('user_photo',formData.img);
+    form.append('keys',JSON.stringify({cipher_public: keys.cipher.public, sign_public: keys.sign.public}));
 
     let resp = await fetch("http://127.0.0.1:8000/crearUsuario", {
       method: "POST",
@@ -58,9 +62,9 @@ function SignUp({setUser,setIsLogged}) {
 
     if(resp.status === 200){
       setUser(user);
-      genKey(user);
       setIsLogged(true);
       console.log(user);
+      localStorage.setItem(user.handle,JSON.stringify(keys));
     }
   }
 
