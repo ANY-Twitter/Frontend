@@ -7,27 +7,7 @@ import { UserContext } from './Contexts.jsx';
 import { useContext, useEffect, useState } from 'react';
 import { decrypt, hexToBytes, verifyFirm } from '../util/crypto';
 
-function createSampleTweets(n) {
-    let colection = [];
-    let dummy_data = {
-        name: 'Eric Bracamonte',
-        handle: 'Ereiclo',
-        data: `Lorem Ipsum is simply dummy text of the 
-                printing and typesetting industry. Lorem Ipsum 
-                has been the industry`,
-        srcImg: user_photo,
-        isTweet: false,
-    };
 
-    for (let i = 0; i < n; ++i) {
-        let actual_dummy_data = { ...dummy_data };
-        actual_dummy_data.id = i;
-        colection.push(actual_dummy_data);
-    }
-
-    return colection;
-
-}
 
 function Messages(props) {
 
@@ -83,16 +63,14 @@ function Messages(props) {
 
         getTwets();
 
-    }, [])
+    }, []);
 
-    // const sampleTweets = createSampleTweets(10);
 
 
     return (
         <div className="messages-section">
             <h2>Messages</h2>
             <Tweets tweets={tweets} />
-            {/* <Tweets tweets={sampleTweets}/> */}
         </div>
     )
 
