@@ -4,7 +4,7 @@ import Tweets from "./Tweets";
 import { Link } from "react-router-dom";
 import user_photo from "../img/test-username-photo.jpeg";
 import NewTweet from './NewTweet';
-import { useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { UserContext } from './Contexts.jsx';
 
 function createSampleTweets(n) {
@@ -34,6 +34,38 @@ function Home() {
     const user = useContext(UserContext);
 
     const sampleTweets = createSampleTweets(10);
+    const [tweets,setTweets] = useState([]);
+
+    useEffect(()=>{
+        const load_tweets = async () =>{
+
+            console.log('aaa')
+            const tweets_response = await fetch('http://localhost:8000/obtenerTweets');
+            const tweets = await tweets_response.json();
+
+
+            setTweets(tweets.map(({id,data,usuario: [{handle,name,pictureName}]},index) => {
+                console.log('La data es: ',data);
+                console.log('El usuario es: ',name);
+                console.log('El handle es: ',handle);
+                console.log('La picture name es: ',pictureName);
+                //const endPointImage ='';
+
+                return {id,name,handle,data,srcImg:''};
+
+            }))
+
+
+ 
+        }
+
+        load_tweets();
+       
+
+        
+
+
+    },[])
 
 
     return (
@@ -43,7 +75,7 @@ function Home() {
             <div className="create-tweet">
                 <NewTweet/>
             </div>
-            <Tweets tweets={sampleTweets}/>
+            <Tweets tweets={tweets}/>
         </div>
     )
 

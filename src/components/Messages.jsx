@@ -22,7 +22,7 @@ function Messages(props) {
             const messages_resp = await fetch("http://localhost:8000/obtenerMensajes");
             const messages = await messages_resp.json();
 
-            let a = messages.map(async (elem) => {
+            let allMessages = messages.map(async (elem) => {
                 const hash = hexToBytes(elem.hash);
                 const signedHash = hexToBytes(elem.signedHash);
                 const message = hexToBytes(elem.message);
@@ -53,7 +53,7 @@ function Messages(props) {
 
             })
 
-            let result = await Promise.all(a);
+            let result = await Promise.all(allMessages);
 
             console.log('estos son los finales', result);
 
