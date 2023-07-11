@@ -13,6 +13,8 @@ function SignUp({setUser,setIsLogged}) {
     clave: '',
     rClave: '',
     img:'',
+    public_keys_form:'',
+    private_keys_form:'',
   });
   const [prevSrc,setPrevSrc] = useState('');
   const [errors,setErrors] =  useState({
@@ -80,9 +82,13 @@ function SignUp({setUser,setIsLogged}) {
   useEffect(()=> {
     const generateKeys = async () => {
       const initialKeys = await genKey();
-      // console.log(initialKeys)
+      console.log(initialKeys)
 
       setKeys(initialKeys);
+      const public_keys_form_json = {cipher:initialKeys.cipher.public,sign:initialKeys};
+      const private_keys_form_json = {};
+
+      setFormData({...formData,public_keys_form:JSON.stringify(public_keys_form_json)})
 
     }
 
@@ -158,8 +164,12 @@ function SignUp({setUser,setIsLogged}) {
         </div>
         <div className="input-row">
           <div className="text">Llaves:</div>
-          <div className="text">Para el correcto funcionamiento de <strong>AnyTwitter</strong> necesitamos que guardes los siguientes valores en un repositorio en <a href='https://github.com'><strong>github</strong></a> llamado anytwitter.
+          <div className="text">Para el correcto funcionamiento de <strong>AnyTwitter</strong> necesitamos que guardes los siguientes valores en un repositorio en <a href='https://github.com'><strong>github</strong></a> llamado <strong>anytwitter</strong> (Nota: el usuario de github debe ser <strong>exactamente</strong> igual al handle ingresado).
           </div>
+          <label htmlFor="public_keys">Llaves publicas (nombre el archivo <strong>public.json</strong>):</label>
+          <input className="keys" type="text" name="public_keys" id="public_keys" value={formData.public_keys_form} disabled/>
+          <label htmlFor="public_keys">Llaves privadas (nombre el archivo <strong>private.json</strong>):</label>
+          <input className="keys" type="text" name="public_keys" id="public_keys" value={formData.private_keys_form} disabled/>
         </div>
         <div className="input-row">
           <label className='button' htmlFor="userPhoto">Inserta tu imagen de perfil</label>

@@ -11,6 +11,7 @@ form{
 }
 
 .input-row{
+    position: relative;
     display: grid;
     row-gap: 12px;
     justify-items: center;
@@ -73,4 +74,10 @@ input[type="password"]:focus{
 
 .text{
     width: 40%;
+}
+
+
+input.keys:disabled {
+    background-color: rgb(200, 200, 200);
+    text-overflow: ellipsis;
 }
