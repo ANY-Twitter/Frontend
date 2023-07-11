@@ -1,6 +1,7 @@
 .sign-up{
     /* overflow: auto; */
     height: 100%;
+    overflow: auto;
 }
 
 form{
@@ -64,4 +65,12 @@ input[type="password"]:focus{
 #prevImg{
     width: 48px;
     height: 48px;
+}
+
+.input-row:last-child{
+    margin-bottom: 20px;
+}
+
+.text{
+    width: 40%;
 }

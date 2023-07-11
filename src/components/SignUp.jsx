@@ -4,6 +4,8 @@ import { Link, Outlet } from "react-router-dom";
 import { genKey } from '../util/crypto';
 
 function SignUp({setUser,setIsLogged}) {
+  const [keys,setKeys] = useState({});
+
 
   const [formData,setFormData] = useState({
     name: '',
@@ -44,8 +46,6 @@ function SignUp({setUser,setIsLogged}) {
       return undefined;
     }
 
-    const keys = await genKey();
-
     const form = new FormData();
 
     form.append('name',formData.name);
@@ -77,6 +77,17 @@ function SignUp({setUser,setIsLogged}) {
 
   },[formData.clave,formData.rClave]);
   
+  useEffect(()=> {
+    const generateKeys = async () => {
+      const initialKeys = await genKey();
+      // console.log(initialKeys)
+
+      setKeys(initialKeys);
+
+    }
+
+    generateKeys();
+  },[])
 
 
   return (
@@ -144,6 +155,11 @@ function SignUp({setUser,setIsLogged}) {
             onChange={(e) => setFormData({...formData,rClave: e.target.value})}
             className={errors.clave ?  'invalid' : undefined}
           />
+        </div>
+        <div className="input-row">
+          <div className="text">Llaves:</div>
+          <div className="text">Para el correcto funcionamiento de <strong>AnyTwitter</strong> necesitamos que guardes los siguientes valores en un repositorio en <a href='https://github.com'><strong>github</strong></a> llamado anytwitter.
+          </div>
         </div>
         <div className="input-row">
           <label className='button' htmlFor="userPhoto">Inserta tu imagen de perfil</label>
