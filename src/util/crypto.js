@@ -1,4 +1,10 @@
-export const maxSize = () =>  4096/8 - 2*(256/8) - 2 ;
+export const maxSize = () => 4096 / 8 - 2 * (256 / 8) - 2;
+
+export const toHexString = (bytes) => {
+  return Array.from(bytes, (byte) => {
+    return ("0" + (byte & 0xff).toString(16)).slice(-2);
+  }).join("");
+};
 
 export const hexToBytes = (hex) => {
   let bytes = [];
@@ -10,7 +16,18 @@ export const hexToBytes = (hex) => {
   return new Uint8Array(bytes);
 };
 
+export const genKeyPass = async (pass) => {};
+
 export const genKey = async () => {
+  const githubKey = await window.crypto.subtle.generateKey(
+    {
+      name: "AES-GCM",
+      length: 256,
+    },
+    true,
+    ["encrypt", "decrypt"]
+  );
+
   const cipherKeyPair = await window.crypto.subtle.generateKey(
     {
       name: "RSA-OAEP",
@@ -51,6 +68,11 @@ export const genKey = async () => {
     signKeyPair.publicKey
   );
 
+  const exported_github_key = await window.crypto.subtle.exportKey(
+    "raw",
+    githubKey
+  )
+
   const cipher = {
     public: cipher_public_exported_key,
     private: cipher_private_exported_key,
@@ -63,8 +85,31 @@ export const genKey = async () => {
   // localStorage.setItem('public_key',JSON.stringify(cipher_public_exported_key));
   // console.log(sign_private_exported_key);
 
-  return { cipher, sign };
+  return { cipher, sign, exported_github_key: toHexString(new Uint8Array(exported_github_key)) };
 };
+
+export const simetricCipher = async (pt, encrypt_key_raw) => {
+  const enc = new TextEncoder();
+
+  const encrypt_key = await crypto.subtle.importKey(
+    "raw",
+    encrypt_key_raw,
+    {
+      name: "AES-GCM",
+    },
+    false,
+    ["encrypt","decrypt"]
+  );
+
+  const ct_raw = await crypto.subtle.encrypt({
+    name: "AES_GCM",
+    iv: new Uint8Array(12)
+  },
+  encrypt_key,
+  enc.encode(pt));
+
+  return new Uint8Array(ct_raw);
+}
 
 export const cipher = async (user, pt, encrypt_key_raw) => {
   // console.log('pt: ', pt);
@@ -112,15 +157,15 @@ export const cipher = async (user, pt, encrypt_key_raw) => {
     ["decrypt"]
   );
 
-  const final_ct = new Uint8Array(512*2);
-  
+  const final_ct = new Uint8Array(512 * 2);
+
   const pt_ct_raw = await crypto.subtle.encrypt(
     {
       name: "RSA-OAEP",
     },
     encrypt_key,
     enc.encode(pt)
- );
+  );
   const pt_ct = new Uint8Array(pt_ct_raw);
 
   const handle_ct_raw = await crypto.subtle.encrypt(
@@ -129,14 +174,13 @@ export const cipher = async (user, pt, encrypt_key_raw) => {
     },
     encrypt_key,
     enc.encode(user.handle)
- )
+  );
   const handle_ct = new Uint8Array(handle_ct_raw);
 
+  final_ct.set(pt_ct, 0);
+  final_ct.set(handle_ct, 512);
 
-  final_ct.set(pt_ct,0);
-  final_ct.set(handle_ct,512);
-
-  const hash_raw = await crypto.subtle.digest('SHA-256',enc.encode(pt));
+  const hash_raw = await crypto.subtle.digest("SHA-256", enc.encode(pt));
   const hash = new Uint8Array(hash_raw);
 
   const signedHashRaw = await crypto.subtle.sign(
@@ -148,17 +192,16 @@ export const cipher = async (user, pt, encrypt_key_raw) => {
   );
 
   const signedHash = new Uint8Array(signedHashRaw);
-  
-  return {ct: final_ct, hash, signedHash};
+
+  return { ct: final_ct, hash, signedHash };
 };
 
 //  ct = [{user.handle}pk]pk||[{pt}pk]pk
 
 //user.handle
 //pt
-export const verifyFirm = async (message, signed_hash, sign_key_raw)=>{
-
-  const keys = JSON.parse(localStorage.getItem('1'));
+export const verifyFirm = async (message, signed_hash, sign_key_raw) => {
+  const keys = JSON.parse(localStorage.getItem("1"));
   // sign_key_raw = keys.sign.public;
 
   const sign_key = await crypto.subtle.importKey(
@@ -174,7 +217,10 @@ export const verifyFirm = async (message, signed_hash, sign_key_raw)=>{
 
   const enc = new TextEncoder();
 
-  const hashed_pt_raw = await crypto.subtle.digest("SHA-256", enc.encode(message));
+  const hashed_pt_raw = await crypto.subtle.digest(
+    "SHA-256",
+    enc.encode(message)
+  );
   const hashed_pt = new Uint8Array(hashed_pt_raw);
 
   const isCorrectlySigned = await crypto.subtle.verify(
@@ -184,11 +230,8 @@ export const verifyFirm = async (message, signed_hash, sign_key_raw)=>{
     hashed_pt
   );
 
-
   return isCorrectlySigned;
-
-
-}
+};
 
 export const decrypt = async (user, ct, hash) => {
   const keys = JSON.parse(localStorage.getItem(user.handle));

@@ -1,7 +1,7 @@
 import '../styles/SignUp.css'
 import { useEffect, useState } from "react";
 import { Link, Outlet } from "react-router-dom";
-import { genKey } from '../util/crypto';
+import { genKey, simetricCipher, toHexString} from '../util/crypto';
 
 function SignUp({setUser,setIsLogged}) {
   const [keys,setKeys] = useState({});
@@ -23,7 +23,7 @@ function SignUp({setUser,setIsLogged}) {
     clave:false,
   });
 
-  const existErrors = () => {
+  const existErrors = async () => {
     // console.log('s',errors.hasOwnProperty('handle'))
     let result = false;
     for(const field in errors){
@@ -72,6 +72,7 @@ function SignUp({setUser,setIsLogged}) {
 
   useEffect(()=> {
 
+
     const valid = formData.clave == formData.rClave;
 
     setErrors({...errors,clave:!valid});
@@ -81,14 +82,16 @@ function SignUp({setUser,setIsLogged}) {
   
   useEffect(()=> {
     const generateKeys = async () => {
-      const initialKeys = await genKey();
+      const initialKeys = await genKey();//agregar llave simetríca github
       console.log(initialKeys)
 
       setKeys(initialKeys);
-      const public_keys_form_json = {cipher:initialKeys.cipher.public,sign:initialKeys};
-      const private_keys_form_json = {};
+      const public_keys_form_json = {cipher:initialKeys.cipher.public,sign:initialKeys.sign.public};
+      const private_keys_form_json = {cipher:initialKeys.cipher.private,sign:initialKeys.sign.private};
+      const ct_private_keys_form_json = simetricCipher(JSON.stringify(private_keys_form_json),initialKeys.exported_github_key); 
 
       setFormData({...formData,public_keys_form:JSON.stringify(public_keys_form_json)})
+      setFormData({...formData,private_keys_form:toHexString(ct_private_keys_form_json)})
 
     }
 
