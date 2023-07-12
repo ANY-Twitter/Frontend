@@ -11,6 +11,7 @@ import Messages from "./components/Messages";
 import Home from "./components/Home";
 import SignUp from "./components/SignUp";
 import { UserContext } from "./components/Contexts";
+import Config from "./components/Config";
 
 
 function App() {
@@ -22,13 +23,14 @@ function App() {
     <BrowserRouter>
       <UserContext.Provider value={user}>
         <Routes>
-          <Route path="/" element={isLogged && <Twitter setIsLogged={setIsLogged} setUser={setUser}/>}>
+          <Route path="/" element={isLogged && <Twitter />}>
             {
               isLogged ?  
               <>
               <Route path="home" element={<Home/>} />
               <Route path="send-message" element={<SendMessage/>} />
               <Route path="messages" element={<Messages/>} />
+              <Route path="config" element={<Config setIsLogged={setIsLogged} setUser={setUser}/>}></Route>
               </> :
 
               <>

@@ -36,7 +36,7 @@ function Messages(props) {
                     if (isValid) {
                         console.log('este se desencripta', final_message);
                         return {
-                                id: elem._id,
+                                id: elem.id,
                                 name: final_message.name,
                                 handle: final_message.handle,
                                 data: final_message.pt,
