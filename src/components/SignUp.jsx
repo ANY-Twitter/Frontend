@@ -1,10 +1,13 @@
 import '../styles/SignUp.css'
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Link, Outlet } from "react-router-dom";
-import { genKey, simetricCipher, toHexString} from '../util/crypto';
+import { genKey, genKeyPass, simetricCipher, toHexString} from '../util/crypto';
+import {UserContext} from './Contexts'
 
 function SignUp({setUser,setIsLogged}) {
-  const [keys,setKeys] = useState(undefined);
+
+  const user = useContext(UserContext);
+
   const [publicKeyError,setPublicKeyError] = useState(false);
   const [privateKeyError,setPrivateKeyError] = useState(false);
 
@@ -48,7 +51,7 @@ function SignUp({setUser,setIsLogged}) {
     console.log(baseUrl);
 
     return files.map(async ([file,expectedValue]) => {
-      let response = await fetch(baseUrl + file, { cache: "no-store" });
+      let response = await fetch(baseUrl + file, {headers:{Authorization: "token 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"}, cache: "no-store" });
 
       if(response.status === 404 || response.status === 400) 
         return 'Does not exists';
@@ -58,6 +61,7 @@ function SignUp({setUser,setIsLogged}) {
       try{
         const temp = await response.json();
         const data_raw = atob(temp.content);
+        console.log(data_raw);
         response_json = JSON.parse(data_raw);
       }catch(error){
         return 'Not expected value';
@@ -104,7 +108,7 @@ function SignUp({setUser,setIsLogged}) {
     if (existErrors() || publicResult !== '' || privateResult !== '') {
 
       // console.log('ke');
-      console.log('bien', existErrors());
+      // console.log('bien', existErrors());
       return undefined;
     }
 
@@ -114,19 +118,27 @@ function SignUp({setUser,setIsLogged}) {
     form.append('handle', formData.handle);
     form.append('password', formData.clave);
     form.append('user_photo', formData.img);
-    form.append('keys', JSON.stringify({ cipher_public: keys.cipher.public, sign_public: keys.sign.public }));
+    form.append('keys', JSON.stringify({ cipher_public: user.keys.cipher.public, sign_public: user.keys.sign.public }));
 
     let resp = await fetch("http://127.0.0.1:8000/crearUsuario", {
       method: "POST",
       body: form,
     });
-    let user = await resp.json();
+    let response_user = await resp.json();
 
+    const salt = window.crypto.getRandomValues(new Uint8Array(16));
+    const iv = window.crypto.getRandomValues(new Uint8Array(12));
+
+    const localKey = await genKeyPass(formData.clave,salt);
+    const ct_keys_raw = await simetricCipher(JSON.stringify(user.keys),localKey,iv);
+    const ct_key = toHexString(ct_keys_raw);
+
+    // console.log(JSON.stringify(user.keys));
     if (resp.status === 200) {
-      setUser(user);
+      setUser({...user,...response_user});
       setIsLogged(true);
-      console.log(user);
-      localStorage.setItem(user.handle, JSON.stringify(keys));
+      console.log(response_user);
+      localStorage.setItem(response_user.handle, JSON.stringify({keys:ct_key,iv:toHexString(iv),salt:toHexString(salt)}));
     }
   }
 
@@ -143,20 +155,20 @@ function SignUp({setUser,setIsLogged}) {
   useEffect(() => {
     const generateKeys = async () => {
       // let initial = new Date().getTime();
-      if(keys){
+      if(user.keys){
         return undefined;
       }
       const initialKeys = await genKey();//agregar llave simetríca github
       console.log(initialKeys)
       // console.log((new Date().getTime() - initial)/1000);
 
-      setKeys(initialKeys);
+      setUser({...user,keys:initialKeys});
       const public_keys_form_json = { cipher: initialKeys.cipher.public, sign: initialKeys.sign.public };
       const private_keys_form_json = { cipher: initialKeys.cipher.private, sign: initialKeys.sign.private };
 
 
       // initial = new Date().getTime();
-      const ct_private_keys_form_json = await simetricCipher(JSON.stringify(private_keys_form_json), initialKeys.exported_github_key);
+      const ct_private_keys_form_json = await simetricCipher(JSON.stringify(private_keys_form_json), initialKeys.exported_github_key, new Uint8Array(12));
       // console.log(ct_private_keys_form_json);
       // console.log((new Date().getTime() - initial)/1000);
       setFormData({

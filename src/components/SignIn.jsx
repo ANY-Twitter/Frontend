@@ -1,9 +1,12 @@
 import { useContext, useEffect, useState } from "react";
 import { Link, Outlet, redirect, useNavigate } from "react-router-dom";
 import '../styles/SignIn.css'
-import { genKey } from "../util/crypto";
+import { genKey, genKeyPass, hexToBytes, simetricCipher, simetricDecrypt, toHexString } from "../util/crypto";
+import { UserContext } from "./Contexts";
+
 
 function SignIn({setUser, setIsLogged}) {
+  const user = useContext(UserContext);
   const [handle, setHandle] = useState("");
   const [clave, setClave] = useState("");
 
@@ -24,12 +27,21 @@ function SignIn({setUser, setIsLogged}) {
       },
     });
 
-    let user = await resp.json();
-    console.log(user, resp.status);
+    let response_user = await resp.json();
+    console.log(response_user, resp.status);
     if(resp.status == 200){
+      const storedUserDataString = localStorage.getItem(response_user.handle);
+      const {keys:ct_keys,iv,salt} = JSON.parse(storedUserDataString);
+
+      const localKey = await genKeyPass(clave,hexToBytes(salt));
+      const dec = new TextDecoder();
+      const keys_raw =  await simetricDecrypt(hexToBytes(ct_keys),hexToBytes(iv),hexToBytes(localKey));
+      const keys = JSON.parse(dec.decode(keys_raw));
+
+
       
       setIsLogged(true);
-      setUser(user);
+      setUser({...response_user,keys});
       navegar('/home');
     }
   }

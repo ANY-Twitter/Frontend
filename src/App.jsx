@@ -14,14 +14,15 @@ import { UserContext } from "./components/Contexts";
 
 
 function App() {
-  const [user, setUser] = useState({});
+
+  const [user, setUser] = useState({keys:undefined});
   const [isLogged, setIsLogged] = useState(false);
 
   return (
     <BrowserRouter>
       <UserContext.Provider value={user}>
         <Routes>
-          <Route path="/" element={isLogged && <Twitter setIsLogged={setIsLogged}/>}>
+          <Route path="/" element={isLogged && <Twitter setIsLogged={setIsLogged} setUser={setUser}/>}>
             {
               isLogged ?  
               <>

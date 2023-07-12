@@ -16,7 +16,37 @@ export const hexToBytes = (hex) => {
   return new Uint8Array(bytes);
 };
 
-export const genKeyPass = async (pass) => {};
+export const genKeyPass = async (pass,salt) => {
+  const enc = new TextEncoder();
+
+  const passKey = await window.crypto.subtle.importKey(
+    "raw",
+    enc.encode(pass),
+    "PBKDF2",
+    false,
+    ["deriveBits", "deriveKey"],
+  );
+
+  const key = await window.crypto.subtle.deriveKey(
+    {
+      name: "PBKDF2",
+      salt,
+      iterations: 100000,
+      hash: "SHA-256",
+    },
+    passKey,
+    { name: "AES-GCM", length: 256 },
+    true,
+    ["encrypt", "decrypt"],
+  );
+
+  const key_exported_raw = await window.crypto.subtle.exportKey(
+    "raw",
+    key 
+  );
+
+  return toHexString(new Uint8Array(key_exported_raw));
+};
 
 export const genKey = async () => {
   const githubKey = await window.crypto.subtle.generateKey(
@@ -88,7 +118,7 @@ export const genKey = async () => {
   return { cipher, sign, exported_github_key: toHexString(new Uint8Array(exported_github_key)) };
 };
 
-export const simetricCipher = async (pt, encrypt_key_raw) => {
+export const simetricCipher = async (pt, encrypt_key_raw, iv) => {
   const enc = new TextEncoder();
 
   const encrypt_key = await crypto.subtle.importKey(
@@ -103,7 +133,7 @@ export const simetricCipher = async (pt, encrypt_key_raw) => {
 
   const ct_raw = await crypto.subtle.encrypt({
     name: "AES-GCM",
-    iv: new Uint8Array(12)
+    iv 
   },
   encrypt_key,
   enc.encode(pt));
@@ -231,6 +261,28 @@ export const verifyFirm = async (message, signed_hash, sign_key_raw) => {
   );
 
   return isCorrectlySigned;
+};
+
+export const simetricDecrypt = async (ct, iv, key_raw) => {
+  const key = await window.crypto.subtle.importKey(
+    "raw",
+    key_raw,
+    {
+      name: "AES-GCM"
+    },
+    false,
+    ["encrypt","decrypt"]
+  );
+
+
+  const pt_raw = await window.crypto.subtle.decrypt({ 
+    name: "AES-GCM" ,
+    iv
+  },
+  key,
+  ct);
+
+  return new Uint8Array(pt_raw);
 };
 
 export const decrypt = async (user, ct, hash) => {
