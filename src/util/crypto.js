@@ -93,7 +93,7 @@ export const simetricCipher = async (pt, encrypt_key_raw) => {
 
   const encrypt_key = await crypto.subtle.importKey(
     "raw",
-    encrypt_key_raw,
+    hexToBytes(encrypt_key_raw),
     {
       name: "AES-GCM",
     },
@@ -102,7 +102,7 @@ export const simetricCipher = async (pt, encrypt_key_raw) => {
   );
 
   const ct_raw = await crypto.subtle.encrypt({
-    name: "AES_GCM",
+    name: "AES-GCM",
     iv: new Uint8Array(12)
   },
   encrypt_key,

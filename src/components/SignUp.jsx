@@ -4,7 +4,9 @@ import { Link, Outlet } from "react-router-dom";
 import { genKey, simetricCipher, toHexString} from '../util/crypto';
 
 function SignUp({setUser,setIsLogged}) {
-  const [keys,setKeys] = useState({});
+  const [keys,setKeys] = useState(undefined);
+  const [publicKeyError,setPublicKeyError] = useState(false);
+  const [privateKeyError,setPrivateKeyError] = useState(false);
 
 
   const [formData,setFormData] = useState({
@@ -23,7 +25,7 @@ function SignUp({setUser,setIsLogged}) {
     clave:false,
   });
 
-  const existErrors = async () => {
+  const existErrors = () => {
     // console.log('s',errors.hasOwnProperty('handle'))
     let result = false;
     for(const field in errors){
@@ -39,22 +41,80 @@ function SignUp({setUser,setIsLogged}) {
 
   }
 
+  async function verifyGithubKeys() {
+    const baseUrl = `https://api.github.com/repos/${formData.handle}/anytwitter/contents/`;
+    const files = [['public.json', formData.public_keys_form],
+                  ['private.json', formData.private_keys_form]];
+    console.log(baseUrl);
+
+    return files.map(async ([file,expectedValue]) => {
+      let response = await fetch(baseUrl + file, { cache: "no-store" });
+
+      if(response.status === 404 || response.status === 400) 
+        return 'Does not exists';
+      
+      let response_json;
+
+      try{
+        const temp = await response.json();
+        const data_raw = atob(temp.content);
+        response_json = JSON.parse(data_raw);
+      }catch(error){
+        return 'Not expected value';
+      }
+
+      const response_string = JSON.stringify(response_json);
+
+      // let mistmatch = '';
+      // let expected = '';
+
+      // console.log(file,'esperado:',expectedValue,expectedValue.length,expectedValue[expectedValue.length-1]);
+      // console.log(file,'recibido',response_string,response_string.length,response_string.charCodeAt(response_string.length-1));
+      // console.log(file,'recibido',response_string === expectedValue);
+
+      // for(let i = 0; i < expectedValue.length;++i){
+      //   if(i < response_string.length && response_string[i] !== expectedValue[i]){
+      //     mistmatch += response_string[i];
+      //     expected += expectedValue[i];
+      //     // console.log(i)
+      //   }
+      // }
+      // console.log('fallo: ',mistmatch.length);
+      // console.log('fallo:',expected.length);
+
+      return response_string !== expectedValue ? 'Not value requested' : '';
+
+    })
+
+
+
+  }
+
   async function submit(e) {
     e.preventDefault();
 
-    if(existErrors()){
-      
-      console.log('bien',existErrors());
+    const [publicResult,privateResult] = await Promise.all(await verifyGithubKeys());
+
+    console.log(publicResult,privateResult)
+    
+    setPublicKeyError(publicResult !== '');
+    setPrivateKeyError(privateResult !== '');
+
+
+    if (existErrors() || publicResult !== '' || privateResult !== '') {
+
+      // console.log('ke');
+      console.log('bien', existErrors());
       return undefined;
     }
 
     const form = new FormData();
 
-    form.append('name',formData.name);
-    form.append('handle',formData.handle);
-    form.append('password',formData.clave);
-    form.append('user_photo',formData.img);
-    form.append('keys',JSON.stringify({cipher_public: keys.cipher.public, sign_public: keys.sign.public}));
+    form.append('name', formData.name);
+    form.append('handle', formData.handle);
+    form.append('password', formData.clave);
+    form.append('user_photo', formData.img);
+    form.append('keys', JSON.stringify({ cipher_public: keys.cipher.public, sign_public: keys.sign.public }));
 
     let resp = await fetch("http://127.0.0.1:8000/crearUsuario", {
       method: "POST",
@@ -62,41 +122,53 @@ function SignUp({setUser,setIsLogged}) {
     });
     let user = await resp.json();
 
-    if(resp.status === 200){
+    if (resp.status === 200) {
       setUser(user);
       setIsLogged(true);
       console.log(user);
-      localStorage.setItem(user.handle,JSON.stringify(keys));
+      localStorage.setItem(user.handle, JSON.stringify(keys));
     }
   }
 
-  useEffect(()=> {
+  useEffect(() => {
 
 
     const valid = formData.clave == formData.rClave;
 
-    setErrors({...errors,clave:!valid});
+    setErrors({ ...errors, clave: !valid });
     // console.log(valid);
 
-  },[formData.clave,formData.rClave]);
-  
-  useEffect(()=> {
+  }, [formData.clave, formData.rClave]);
+
+  useEffect(() => {
     const generateKeys = async () => {
+      // let initial = new Date().getTime();
+      if(keys){
+        return undefined;
+      }
       const initialKeys = await genKey();//agregar llave simetríca github
       console.log(initialKeys)
+      // console.log((new Date().getTime() - initial)/1000);
 
       setKeys(initialKeys);
-      const public_keys_form_json = {cipher:initialKeys.cipher.public,sign:initialKeys.sign.public};
-      const private_keys_form_json = {cipher:initialKeys.cipher.private,sign:initialKeys.sign.private};
-      const ct_private_keys_form_json = simetricCipher(JSON.stringify(private_keys_form_json),initialKeys.exported_github_key); 
+      const public_keys_form_json = { cipher: initialKeys.cipher.public, sign: initialKeys.sign.public };
+      const private_keys_form_json = { cipher: initialKeys.cipher.private, sign: initialKeys.sign.private };
 
-      setFormData({...formData,public_keys_form:JSON.stringify(public_keys_form_json)})
-      setFormData({...formData,private_keys_form:toHexString(ct_private_keys_form_json)})
+
+      // initial = new Date().getTime();
+      const ct_private_keys_form_json = await simetricCipher(JSON.stringify(private_keys_form_json), initialKeys.exported_github_key);
+      // console.log(ct_private_keys_form_json);
+      // console.log((new Date().getTime() - initial)/1000);
+      setFormData({
+        ...formData,
+        public_keys_form: JSON.stringify(public_keys_form_json),
+        private_keys_form: JSON.stringify({value:toHexString(ct_private_keys_form_json)})
+      })
 
     }
 
     generateKeys();
-  },[])
+  }, [])
 
 
   return (
@@ -104,7 +176,7 @@ function SignUp({setUser,setIsLogged}) {
       <h1>ANY-TWITTER</h1>
       <h2>Regístrese</h2>
       <form action="" noValidate>
-          <div className="input-row">
+        <div className="input-row">
           <label htmlFor="name">Nombre: </label>
           <input
             type="text"
@@ -115,11 +187,11 @@ function SignUp({setUser,setIsLogged}) {
               const elem = e.currentTarget;
               const valid = elem.validity.valid;
               console.log(valid);
-              setFormData({...formData,name: e.target.value});
-              setErrors({...errors,name: !valid});
+              setFormData({ ...formData, name: e.target.value });
+              setErrors({ ...errors, name: !valid });
             }
             }
-            className={errors.name ?  'invalid' : undefined}
+            className={errors.name ? 'invalid' : undefined}
             required
           />
         </div>
@@ -134,11 +206,11 @@ function SignUp({setUser,setIsLogged}) {
               const elem = e.currentTarget;
               const valid = elem.validity.valid;
               console.log(valid);
-              setFormData({...formData,handle: e.target.value});
-              setErrors({...errors,"handle": !valid});
+              setFormData({ ...formData, handle: e.target.value });
+              setErrors({ ...errors, "handle": !valid });
             }
             }
-            className={errors.handle ?  'invalid' : undefined}
+            className={errors.handle ? 'invalid' : undefined}
             required
           />
         </div>
@@ -150,8 +222,8 @@ function SignUp({setUser,setIsLogged}) {
             name="clave"
             id="clave"
             value={formData.clave}
-            onChange={(e) => setFormData({...formData,clave: e.target.value})}
-            className={errors.clave ?  'invalid' : undefined}
+            onChange={(e) => setFormData({ ...formData, clave: e.target.value })}
+            className={errors.clave ? 'invalid' : undefined}
           />
         </div>
         <div className="input-row">
@@ -161,37 +233,37 @@ function SignUp({setUser,setIsLogged}) {
             name="rclave"
             id="rclave"
             value={formData.rClave}
-            onChange={(e) => setFormData({...formData,rClave: e.target.value})}
-            className={errors.clave ?  'invalid' : undefined}
+            onChange={(e) => setFormData({ ...formData, rClave: e.target.value })}
+            className={errors.clave ? 'invalid' : undefined}
           />
         </div>
         <div className="input-row">
           <div className="text">Llaves:</div>
-          <div className="text">Para el correcto funcionamiento de <strong>AnyTwitter</strong> necesitamos que guardes los siguientes valores en un repositorio en <a href='https://github.com'><strong>github</strong></a> llamado <strong>anytwitter</strong> (Nota: el usuario de github debe ser <strong>exactamente</strong> igual al handle ingresado).
+          <div className="text">Para el correcto funcionamiento de <strong>AnyTwitter</strong> necesitamos que guardes los siguientes valores en un repositorio en <a target="_blank" rel='noreferrer' href='https://github.com/new?name=anytwitter'><strong>github</strong></a> llamado <strong>anytwitter</strong> (Nota: el usuario de github debe ser <strong>exactamente</strong> igual al handle ingresado y la rama debe ser <strong>main</strong>).
           </div>
           <label htmlFor="public_keys">Llaves publicas (nombre el archivo <strong>public.json</strong>):</label>
-          <input className="keys" type="text" name="public_keys" id="public_keys" value={formData.public_keys_form} disabled/>
+          <input className={`keys ${publicKeyError ? 'invalid' : ''}`} type="text" name="public_keys" id="public_keys" value={formData.public_keys_form} disabled />
           <label htmlFor="public_keys">Llaves privadas (nombre el archivo <strong>private.json</strong>):</label>
-          <input className="keys" type="text" name="public_keys" id="public_keys" value={formData.private_keys_form} disabled/>
+          <input className={`keys ${privateKeyError ? 'invalid' : ''}`} type="text" name="private_keys" id="private_keys" value={formData.private_keys_form} disabled />
         </div>
         <div className="input-row">
           <label className='button' htmlFor="userPhoto">Inserta tu imagen de perfil</label>
           <input type="file" id="userPhoto" name="userPhoto" accept="image/*"
             onChange={(e) => {
-              let file  = e.currentTarget.files[0];
+              let file = e.currentTarget.files[0];
               const newSrc = URL.createObjectURL(file);
               console.log(e.currentTarget.files);
-              setFormData({...formData,img:file})
+              setFormData({ ...formData, img: file })
               // console.log(newSrc)
               setPrevSrc(newSrc);
             }}
           />
-          <img id='prevImg' src={prevSrc} alt='No preview'/>
+          <img id='prevImg' src={prevSrc} alt='No preview' />
         </div>
         <div className="input-row">
           <button type="submit" className="button" onClick={submit}>Registrar</button>
         </div>
-      </form>     
+      </form>
     </div>
   );
 }

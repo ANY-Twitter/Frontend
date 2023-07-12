@@ -79,5 +79,5 @@ input[type="password"]:focus{
 
 input.keys:disabled {
     background-color: rgb(200, 200, 200);
-    text-overflow: ellipsis;
+    /* text-overflow: ellipsis; */
 }
