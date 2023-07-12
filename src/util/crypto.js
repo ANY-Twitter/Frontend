@@ -144,8 +144,8 @@ export const simetricCipher = async (pt, encrypt_key_raw, iv) => {
 export const cipher = async (user, pt, encrypt_key_raw) => {
   // console.log('pt: ', pt);
 
-  const keys = JSON.parse(localStorage.getItem(user.handle));
-  console.log(keys);
+  const keys = user.keys;
+
   const enc = new TextEncoder();
   const dec = new TextDecoder();
 
@@ -163,7 +163,8 @@ export const cipher = async (user, pt, encrypt_key_raw) => {
   );
 
   const sign_key_raw = keys.sign.private;
-  console.log(keys.sign.private);
+
+  // console.log(keys.sign.private);
   const sign_key = await crypto.subtle.importKey(
     "jwk",
     sign_key_raw,
@@ -223,7 +224,7 @@ export const cipher = async (user, pt, encrypt_key_raw) => {
 
   const signedHash = new Uint8Array(signedHashRaw);
 
-  return { ct: final_ct, hash, signedHash };
+  return { ct: final_ct, signedHash };
 };
 
 //  ct = [{user.handle}pk]pk||[{pt}pk]pk

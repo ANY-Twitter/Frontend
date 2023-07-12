@@ -2,7 +2,7 @@ import { useContext } from 'react';
 import { useState } from 'react';
 import '../styles/SendMessage.css'
 import { UserContext } from './Contexts.jsx';
-import {maxSize, genKey, cipher, decrypt, verifyFirm } from '../util/crypto';
+import {maxSize, genKey, cipher, decrypt, verifyFirm, toHexString } from '../util/crypto';
 
 
 function SendMessage(props) {
@@ -30,28 +30,26 @@ function SendMessage(props) {
 
         if(resp.status === 200){
             const keys_raw = await resp.json();
-            console.log(keys_raw);
+            // console.log(keys_raw);
 
-            const {ct,hash,signedHash} = await cipher(user,message,keys_raw.cipher_public);
-            console.log(ct,hash,signedHash);
+            const {ct,signedHash} = await cipher(user,message,keys_raw.cipher_public);
+            // console.log(ct,hash,signedHash);
 
-            const form = new FormData();
-            form.append('message',new Blob([ct]),{type: 'application/octet-stream'});
-            form.append('hash_',new Blob([hash]),{type: 'application/octet-stream'});
-            form.append('signedHash',new Blob([signedHash]),{type: 'application/octet-stream'});
-            // let conv_ct = await new Blob([ct]).arrayBuffer();
-            // console.log(ct)
-            // console.log(new Uint8Array(conv_ct))
-            // console.log(new Blob([ct],{type: 'application/octet-stream'}))
-            // console.log(conv_ct)
-            let resp_message = await fetch("http://127.0.0.1:8000/submitMessage" , {
+
+            let resp_message = await fetch("http://localhost:8000/submitMessage", {
+                headers: {
+                    'Content-Type': 'application/json'
+                },
                 method: "POST",
-                body: form
+                body: JSON.stringify({
+                    'message': toHexString(ct),
+                    'signedHash':toHexString(signedHash) 
+                })
             });
 
-            let resp_result = await resp_message.text();
+            // let resp_result = await resp_message.text();
 
-            console.log(resp_result)
+            // console.log(resp_result)
 
         }
     }
