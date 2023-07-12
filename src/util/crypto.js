@@ -286,8 +286,8 @@ export const simetricDecrypt = async (ct, iv, key_raw) => {
   return new Uint8Array(pt_raw);
 };
 
-export const decrypt = async (user, ct, hash) => {
-  const keys = JSON.parse(localStorage.getItem(user.handle));
+export const decrypt = async (user, ct) => {
+  const keys = user.keys;
 
   const private_key_raw = keys.cipher.private;
   const private_key = await crypto.subtle.importKey(
@@ -325,17 +325,8 @@ export const decrypt = async (user, ct, hash) => {
   const pt = new Uint8Array(pt_raw);
   const userHandle = new Uint8Array(userHandle_raw);
 
-  const hashed_pt_raw = await crypto.subtle.digest("SHA-256", pt);
-  const hashed_pt = new Uint8Array(hashed_pt_raw);
-
-  const messageIsForUser =
-    hashed_pt.length == hash.length &&
-    hashed_pt.reduce((prev, curr, index) => prev && curr == hash[index], 1);
-
   // console.log(dec.decode(pt), pt.length);
   // console.log(dec.decode(userHandle), userHandle.length);
 
-  return messageIsForUser
-    ? { pt: dec.decode(pt), handle: dec.decode(userHandle) }
-    : null;
+  return { pt: dec.decode(pt), handle: dec.decode(userHandle) };
 };

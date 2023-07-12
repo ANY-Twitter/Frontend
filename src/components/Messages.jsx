@@ -23,12 +23,12 @@ function Messages(props) {
             const messages = await messages_resp.json();
 
             let allMessages = messages.map(async (elem) => {
-                const hash = hexToBytes(elem.hash);
                 const signedHash = hexToBytes(elem.signedHash);
                 const message = hexToBytes(elem.message);
 
 
-                const final_message = await decrypt(user, message, hash);
+                const final_message = await decrypt(user, message);
+
                 if (final_message) {
                     const keys_resp = await fetch("http://localhost:8000/getKeys/" + final_message.handle);
                     const keys = await keys_resp.json();
