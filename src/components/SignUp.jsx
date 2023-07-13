@@ -1,7 +1,7 @@
 import '../styles/SignUp.css'
 import { useContext, useEffect, useState } from "react";
 import { Link, Outlet } from "react-router-dom";
-import { genKey, genKeyPass, simetricCipher, toHexString} from '../util/crypto';
+import { genKey, genKeyPass, hexToBytes, simetricCipher, toHexString} from '../util/crypto';
 import {UserContext} from './Contexts'
 
 function SignUp({setUser,setIsLogged}) {
@@ -124,17 +124,15 @@ function SignUp({setUser,setIsLogged}) {
       method: "POST",
       body: form,
     });
-    let response_user = await resp.json();
-
-    const salt = window.crypto.getRandomValues(new Uint8Array(16));
-    const iv = window.crypto.getRandomValues(new Uint8Array(12));
-
-    const localKey = await genKeyPass(formData.clave,salt);
-    const ct_keys_raw = await simetricCipher(JSON.stringify(user.keys),localKey,iv);
-    const ct_key = toHexString(ct_keys_raw);
-
-    // console.log(JSON.stringify(user.keys));
+        // console.log(JSON.stringify(user.keys));
     if (resp.status === 200) {
+      let response_user = await resp.json();
+  
+      const salt = window.crypto.getRandomValues(new Uint8Array(16));
+      const iv = window.crypto.getRandomValues(new Uint8Array(12));
+      const localKey = await genKeyPass(formData.clave,salt);
+      const ct_keys_raw = await simetricCipher(JSON.stringify(user.keys),hexToBytes(localKey),iv);
+      const ct_key = toHexString(ct_keys_raw);
       setUser({...user,...response_user});
       setIsLogged(true);
       console.log(response_user);
@@ -168,13 +166,15 @@ function SignUp({setUser,setIsLogged}) {
 
 
       // initial = new Date().getTime();
-      const ct_private_keys_form_json = await simetricCipher(JSON.stringify(private_keys_form_json), initialKeys.exported_github_key, new Uint8Array(12));
+      const ct_private_keys_form_json = await simetricCipher(JSON.stringify(private_keys_form_json),
+        hexToBytes(initialKeys.exported_github_key),
+        new Uint8Array(12));
       // console.log(ct_private_keys_form_json);
       // console.log((new Date().getTime() - initial)/1000);
       setFormData({
         ...formData,
         public_keys_form: JSON.stringify(public_keys_form_json),
-        private_keys_form: JSON.stringify({value:toHexString(ct_private_keys_form_json)})
+        private_keys_form: JSON.stringify({ value: toHexString(ct_private_keys_form_json) })
       })
 
     }

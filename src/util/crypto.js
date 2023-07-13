@@ -123,7 +123,7 @@ export const simetricCipher = async (pt, encrypt_key_raw, iv) => {
 
   const encrypt_key = await crypto.subtle.importKey(
     "raw",
-    hexToBytes(encrypt_key_raw),
+    encrypt_key_raw,
     {
       name: "AES-GCM",
     },
@@ -265,25 +265,35 @@ export const verifyFirm = async (message, signed_hash, sign_key_raw) => {
 };
 
 export const simetricDecrypt = async (ct, iv, key_raw) => {
-  const key = await window.crypto.subtle.importKey(
-    "raw",
-    key_raw,
-    {
-      name: "AES-GCM"
+
+  try{
+    const key = await window.crypto.subtle.importKey(
+      "raw",
+      key_raw,
+      {
+        name: "AES-GCM"
+      },
+      false,
+      ["encrypt","decrypt"]
+    );
+
+
+    const pt_raw = await window.crypto.subtle.decrypt({ 
+      name: "AES-GCM" ,
+      iv
     },
-    false,
-    ["encrypt","decrypt"]
-  );
+    key,
+    ct);
 
+    console.log(pt_raw);
 
-  const pt_raw = await window.crypto.subtle.decrypt({ 
-    name: "AES-GCM" ,
-    iv
-  },
-  key,
-  ct);
+    return new Uint8Array(pt_raw);
 
-  return new Uint8Array(pt_raw);
+  } catch (e){
+    console.log(e);
+    return null;
+  }
+
 };
 
 export const decrypt = async (user, ct) => {

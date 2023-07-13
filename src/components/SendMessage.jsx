@@ -47,6 +47,8 @@ function SendMessage(props) {
                 })
             });
 
+            console.log('Se envio: ',message);
+
             // let resp_result = await resp_message.text();
 
             // console.log(resp_result)
