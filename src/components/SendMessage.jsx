@@ -10,6 +10,8 @@ function SendMessage(props) {
     const [message, setMessage] = useState('');
     const [encMessage, setEncMessage] = useState('');
     const [handleTo,setHandleTo] = useState('');
+    const [newUser,setNewUser] = useState(false);
+    const [errorUser,setErrorUser] = useState('');
 
 
     const updateMessage = (e) => {
@@ -21,14 +23,38 @@ function SendMessage(props) {
         setHandleTo(e.currentTarget.value);
     }
 
+    const checkErrors = () => {
+
+        if(handleTo === '' || handleTo == user.handle || message.length > maxSize()) {
+            if(handleTo === '') setErrorUser('Empty handle');
+            else if(handleTo === user.handle) setErrorUser('Same User');
+            else if(message.length === maxSize()) setErrorUser(`Supera el maximo de tamaño (${maxSize()})`);
+
+
+            return true;
+        }
+
+        setErrorUser('');
+
+        return false;
+
+    }
+
     const submit = async (e) => {
         e.preventDefault();
-        if(handleTo === '' || handleTo == user.handle || message.length > maxSize()) return undefined;
+        if(checkErrors()) {
+            return undefined;
+        }
+
+
         let resp = await fetch("http://127.0.0.1:8000/getKeys/" + handleTo, {
             method: "GET",
         });
 
-        if(resp.status === 200){
+        if(resp.status === 400){
+            setErrorUser('User does not exists')
+        }
+        else if(resp.status === 200){
             const keys_raw = await resp.json();
             // console.log(keys_raw);
 
@@ -52,6 +78,7 @@ function SendMessage(props) {
             // let resp_result = await resp_message.text();
 
             // console.log(resp_result)
+            setErrorUser('');
 
         }
     }
@@ -60,7 +87,7 @@ function SendMessage(props) {
     return (
         <div className="send-message">
             <form noValidate>
-                <input onChange={updateHandleTo} type="text" name="to_user" id="to_user" value={handleTo} />
+                <input className={`${errorUser !== '' ? 'invalid' : ''}`}onChange={updateHandleTo} type="text" name="to_user" id="to_user" value={handleTo} />
                 <textarea maxLength={maxSize()} name="user_message" onChange={updateMessage} value={message} id="user_message" cols="30" rows="10"></textarea>
                 <button onClick={submit} className='button'>Enviar</button>
                 {/* <div onClick={async () => { genKey(user); }} className="button">Enviar</div>
@@ -84,7 +111,16 @@ function SendMessage(props) {
                     }
                 }} className="button">Enviar3</div> */}
             </form>
-
+            <div className={`confirm-section ${newUser ? '' : 'off'}`}>
+                <div className={"confirm-section-info"}>
+                    <div className="info">Ve a la configuración de alguno de tus dispositivos, clickee el boton <strong><em>Agregar nuevo dispositivo</em></strong>. Finalmente pegue el valor que le sale en la caja de abajo.</div>
+                    <div className="button-section">
+                        <div className="button" >Accept</div>
+                        <div className="button" onClick={() => {
+                        }}>Cancel</div>
+                    </div>
+                </div>
+            </div>
         </div>
     )
 

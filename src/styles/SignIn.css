@@ -28,4 +28,5 @@
     display: grid;
     row-gap: 45px;
     align-content: center;
+    padding:15px;
 }
