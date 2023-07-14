@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import { useState } from 'react';
 import '../styles/SendMessage.css'
 import { UserContext } from './Contexts.jsx';
@@ -43,7 +43,7 @@ function SendMessage(props) {
     }
 
     const sendMessage = async () => {
-        // console.log(keys_raw);
+        console.log(keysRaw);
 
         const { ct, signedHash } = await cipher(user, message, keysRaw.cipher_public);
         // console.log(ct,hash,signedHash);
@@ -61,6 +61,7 @@ function SendMessage(props) {
         });
 
         console.log('Se envio: ', message);
+        setKeysRaw({});
     }
 
     const submit = async (e) => {
@@ -70,19 +71,37 @@ function SendMessage(props) {
         }
 
 
-        let resp = await fetch("http://127.0.0.1:8000/getKeys/" + handleTo, {
-            method: "GET",
-        });
+        let currentLocalKeys = {}
 
-        if (resp.status === 400) {
-            setErrorUser('User does not exists')
-        }
-        else if (resp.status === 200) {
-            setKeysRaw(await resp.json());
-            toggleNewUser();
+
+
+        if (localStorage.getItem('savedKeys'))
+            currentLocalKeys = JSON.parse(localStorage.getItem('savedKeys'));
+
+        if (currentLocalKeys[handleTo]) {
+            setKeysRaw({...currentLocalKeys[handleTo],send:1});
             setErrorUser('');
         }
+
+        else {
+            let resp = await fetch("http://127.0.0.1:8000/getKeys/" + handleTo, {
+                method: "GET",
+            });
+
+            if (resp.status === 400) {
+                setErrorUser('User does not exists')
+            }
+            else if (resp.status === 200) {
+                setKeysRaw(await resp.json());
+                toggleNewUser();
+                setErrorUser('');
+            }
+        }
     }
+
+    useEffect(() => {
+        if(keysRaw.send) sendMessage();
+    },[keysRaw]);
 
 
     return (
@@ -116,9 +135,19 @@ function SendMessage(props) {
                 <div className={"confirm-section-info"}>
                     <div className="info">¿Está seguro de enviar el mensaje a <strong>{handleTo}</strong>? Tenga cuidado con enviar información sensible a una persona equivocada.</div>
                     <div className="button-section">
-                        <div className="button" onClick={ () => {
-                            sendMessage();
-                            setKeysRaw({});
+                        <div className="button" onClick={() => {
+                            setKeysRaw((prevKeys)=> {return {...prevKeys,send:1};});
+                            let currentLocalKeys = {};
+
+                            if (localStorage.getItem('savedKeys')) {
+                                currentLocalKeys = JSON.parse(localStorage.getItem('savedKeys'));
+                            }
+
+                            currentLocalKeys[handleTo] = keysRaw;
+
+                            localStorage.setItem('savedKeys', JSON.stringify(currentLocalKeys));
+
+
                             toggleNewUser();
                         }}>Accept</div>
                         <div className="button" onClick={() => {
