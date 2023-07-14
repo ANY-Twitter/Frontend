@@ -12,8 +12,10 @@ function SendMessage(props) {
     const [handleTo,setHandleTo] = useState('');
     const [newUser,setNewUser] = useState(false);
     const [errorUser,setErrorUser] = useState('');
+    const [keysRaw,setKeysRaw] = useState({});
 
 
+    const toggleNewUser = () => setNewUser(!newUser);
     const updateMessage = (e) => {
         console.log(message)
         setMessage(e.currentTarget.value);
@@ -40,9 +42,30 @@ function SendMessage(props) {
 
     }
 
+    const sendMessage = async () => {
+        // console.log(keys_raw);
+
+        const { ct, signedHash } = await cipher(user, message, keysRaw.cipher_public);
+        // console.log(ct,hash,signedHash);
+
+
+        let resp_message = await fetch("http://localhost:8000/submitMessage", {
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            method: "POST",
+            body: JSON.stringify({
+                'message': toHexString(ct),
+                'signedHash': toHexString(signedHash)
+            })
+        });
+
+        console.log('Se envio: ', message);
+    }
+
     const submit = async (e) => {
         e.preventDefault();
-        if(checkErrors()) {
+        if (checkErrors()) {
             return undefined;
         }
 
@@ -51,35 +74,13 @@ function SendMessage(props) {
             method: "GET",
         });
 
-        if(resp.status === 400){
+        if (resp.status === 400) {
             setErrorUser('User does not exists')
         }
-        else if(resp.status === 200){
-            const keys_raw = await resp.json();
-            // console.log(keys_raw);
-
-            const {ct,signedHash} = await cipher(user,message,keys_raw.cipher_public);
-            // console.log(ct,hash,signedHash);
-
-
-            let resp_message = await fetch("http://localhost:8000/submitMessage", {
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                method: "POST",
-                body: JSON.stringify({
-                    'message': toHexString(ct),
-                    'signedHash':toHexString(signedHash) 
-                })
-            });
-
-            console.log('Se envio: ',message);
-
-            // let resp_result = await resp_message.text();
-
-            // console.log(resp_result)
+        else if (resp.status === 200) {
+            setKeysRaw(await resp.json());
+            toggleNewUser();
             setErrorUser('');
-
         }
     }
 
@@ -87,7 +88,7 @@ function SendMessage(props) {
     return (
         <div className="send-message">
             <form noValidate>
-                <input className={`${errorUser !== '' ? 'invalid' : ''}`}onChange={updateHandleTo} type="text" name="to_user" id="to_user" value={handleTo} />
+                <input className={`${errorUser !== '' ? 'invalid' : ''}`} onChange={updateHandleTo} type="text" name="to_user" id="to_user" value={handleTo} />
                 <textarea maxLength={maxSize()} name="user_message" onChange={updateMessage} value={message} id="user_message" cols="30" rows="10"></textarea>
                 <button onClick={submit} className='button'>Enviar</button>
                 {/* <div onClick={async () => { genKey(user); }} className="button">Enviar</div>
@@ -113,10 +114,16 @@ function SendMessage(props) {
             </form>
             <div className={`confirm-section ${newUser ? '' : 'off'}`}>
                 <div className={"confirm-section-info"}>
-                    <div className="info">Ve a la configuración de alguno de tus dispositivos, clickee el boton <strong><em>Agregar nuevo dispositivo</em></strong>. Finalmente pegue el valor que le sale en la caja de abajo.</div>
+                    <div className="info">¿Está seguro de enviar el mensaje a <strong>{handleTo}</strong>? Tenga cuidado con enviar información sensible a una persona equivocada.</div>
                     <div className="button-section">
-                        <div className="button" >Accept</div>
+                        <div className="button" onClick={ () => {
+                            sendMessage();
+                            setKeysRaw({});
+                            toggleNewUser();
+                        }}>Accept</div>
                         <div className="button" onClick={() => {
+                            setKeysRaw({});
+                            toggleNewUser();
                         }}>Cancel</div>
                     </div>
                 </div>

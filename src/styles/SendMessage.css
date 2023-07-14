@@ -39,3 +39,7 @@
     align-content: center;
     padding:15px;
 }
+
+.send-message  .button{
+    font-size: 1.3rem;
+}
