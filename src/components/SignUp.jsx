@@ -61,13 +61,15 @@ function SignUp({setUser,setIsLogged}) {
       try{
         const temp = await response.json();
         const data_raw = atob(temp.content);
-        console.log(data_raw);
         response_json = JSON.parse(data_raw);
       }catch(error){
+        // console.log(error);
         return 'Not expected value';
       }
 
       const response_string = JSON.stringify(response_json);
+      console.log('a',response_string);
+      console.log('b',expectedValue);
 
       // let mistmatch = '';
       // let expected = '';
@@ -118,7 +120,7 @@ function SignUp({setUser,setIsLogged}) {
     form.append('handle', formData.handle);
     form.append('password', formData.clave);
     form.append('user_photo', formData.img);
-    form.append('keys', JSON.stringify({ cipher_public: user.keys.cipher.public, sign_public: user.keys.sign.public }));
+    form.append('keys', JSON.stringify({ cipher: user.keys.cipher.public, sign: user.keys.sign.public }));
 
     let resp = await fetch("http://127.0.0.1:8000/crearUsuario", {
       method: "POST",

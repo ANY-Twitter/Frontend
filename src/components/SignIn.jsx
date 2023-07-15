@@ -31,7 +31,6 @@ function SignIn({setUser, setIsLogged}) {
       let response_json = JSON.parse(window.atob(github_response.content));
       let signKey;
       let cipherKey;
-      hola = 5;
 
       if (type == 'private') {
         const keys_ct = response_json['value'];

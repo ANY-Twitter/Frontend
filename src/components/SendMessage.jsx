@@ -15,7 +15,6 @@ function SendMessage(props) {
     const [errorUser,setErrorUser] = useState('');
     const [keysRaw,setKeysRaw] = useState({});
 
-
     const toggleNewUser = () => setNewUser(!newUser);
     const toggleMessageSent = () => setMessageSent(!messageSent);
 
@@ -26,6 +25,14 @@ function SendMessage(props) {
 
     const updateHandleTo = (e) => {
         setHandleTo(e.currentTarget.value);
+    }
+
+    const findUser = (array,username) => {
+        for(const elem of array){
+            if(elem.handle === username) return elem;
+        }
+
+        return null;
     }
 
     const checkErrors = () => {
@@ -48,7 +55,7 @@ function SendMessage(props) {
     const sendMessage = async () => {
         console.log(keysRaw);
 
-        const { ct, signedHash } = await cipher(user, message, keysRaw.cipher_public);
+        const { ct, signedHash } = await cipher(user, message, keysRaw.cipher);
         // console.log(ct,hash,signedHash);
 
 
@@ -88,15 +95,45 @@ function SendMessage(props) {
         }
 
         else {
-            let resp = await fetch("http://127.0.0.1:8000/getKeys/" + handleTo, {
+            const resp = await fetch("http://127.0.0.1:8000/getKeysList", {
                 method: "GET",
             });
 
+
+            
+
             if (resp.status === 400) {
-                setErrorUser('User does not exists')
+                setErrorUser('Unexpect error');
             }
             else if (resp.status === 200) {
-                setKeysRaw(await resp.json());
+                const githubUrl = `https://api.github.com/repos/${handleTo}/anytwitter/contents/public.json`;
+                const allUsers = await resp.json();
+                const userTo = findUser(allUsers,handleTo);
+
+                if(!userTo){
+                    setErrorUser('User not found');
+                    return undefined;
+                }
+
+                const respKeys = JSON.parse(userTo.keys);
+
+                const verifier = await fetch(githubUrl,
+                    {
+                        headers: {
+                            Authorization: "token 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"
+                        },
+                        cache: "no-store"
+                    });
+                const verifierKeys = await verifier.json();
+                    
+                console.log('a', window.atob(verifierKeys.content));
+                console.log('b', JSON.stringify(respKeys));
+                console.log('b', window.atob(verifierKeys.content) === JSON.stringify(respKeys));
+                if(verifier.status === 404 || JSON.stringify(JSON.parse(window.atob(verifierKeys.content))) !== JSON.stringify(respKeys)){
+                    setErrorUser('For security reasons cannot send message to this user');
+                    return undefined;
+                }
+                setKeysRaw(respKeys);
                 toggleNewUser();
                 setErrorUser('');
             }
@@ -104,8 +141,8 @@ function SendMessage(props) {
     }
 
     useEffect(() => {
-        if(keysRaw.send) sendMessage();
-    },[keysRaw]);
+        if (keysRaw.send) sendMessage();
+    }, [keysRaw]);
 
 
     return (
@@ -120,7 +157,7 @@ function SendMessage(props) {
                     <div className="info">¿Está seguro de enviar el mensaje a <strong>{handleTo}</strong>? Tenga cuidado con enviar información sensible a una persona equivocada.</div>
                     <div className="button-section">
                         <div className="button" onClick={() => {
-                            setKeysRaw((prevKeys)=> {return {...prevKeys,send:1};});
+                            setKeysRaw((prevKeys) => { return { ...prevKeys, send: 1 }; });
                             let currentLocalKeys = {};
 
                             if (localStorage.getItem('savedKeys')) {
