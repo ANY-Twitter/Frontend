@@ -71,10 +71,11 @@ function Messages(props) {
                     const isValid = await verifyFirm(final_message.pt, signedHash, keys.sign);
                     if (isValid) {
                         console.log('este se desencripta', final_message);
+                        console.log('este se desencripta', userFrom);
                         return {
                                 id: elem.id,
-                                name: final_message.name,
-                                handle: final_message.handle,
+                                name: userFrom.name,
+                                handle: userFrom.handle,
                                 data: final_message.pt,
                                 srcImg: user_photo,
                                 isTweet: false,
