@@ -37,7 +37,6 @@ function SignUp({setUser,setIsLogged}) {
   });
 
   const existErrors = () => {
-    // console.log('s',errors.hasOwnProperty('handle'))
     let result = false;
     for(const field in errors){
 
@@ -79,30 +78,12 @@ function SignUp({setUser,setIsLogged}) {
         const data_raw = atob(temp.content);
         response_json = JSON.parse(data_raw);
       } catch (error) {
-        // console.log(error);
         return 'Not expected value';
       }
 
       const response_string = JSON.stringify(response_json);
-      console.log('a', response_string);
-      console.log('b', expectedValue);
 
-      // let mistmatch = '';
-      // let expected = '';
-
-      // console.log(file,'esperado:',expectedValue,expectedValue.length,expectedValue[expectedValue.length-1]);
-      // console.log(file,'recibido',response_string,response_string.length,response_string.charCodeAt(response_string.length-1));
-      // console.log(file,'recibido',response_string === expectedValue);
-
-      // for(let i = 0; i < expectedValue.length;++i){
-      //   if(i < response_string.length && response_string[i] !== expectedValue[i]){
-      //     mistmatch += response_string[i];
-      //     expected += expectedValue[i];
-      //     // console.log(i)
-      //   }
-      // }
-      // console.log('fallo: ',mistmatch.length);
-      // console.log('fallo:',expected.length);
+      
 
       return response_string !== expectedValue ? 'Not value requested' : '';
 
@@ -126,8 +107,6 @@ function SignUp({setUser,setIsLogged}) {
     if (existErrors() || publicResult !== '' || privateResult !== '') {
 
       alert("Asegurate que las llaves han sido ingresadas correctamente.")
-      console.log('ke');
-      // console.log('bien', existErrors());
       return undefined;
     }
 
@@ -149,7 +128,6 @@ function SignUp({setUser,setIsLogged}) {
       method: "POST",
       body: form,
     });
-    // console.log(JSON.stringify(user.keys));
     if (resp.status === 200) {
       let response_user = await resp.json();
 
@@ -171,7 +149,6 @@ function SignUp({setUser,setIsLogged}) {
     const valid = formData.clave == formData.rClave;
 
     setErrors({ ...errors, clave: !valid });
-    // console.log(valid);
 
   }, [formData.clave, formData.rClave]);
 
@@ -182,8 +159,6 @@ function SignUp({setUser,setIsLogged}) {
         return undefined;
       }
       const initialKeys = await genKey();//agregar llave simetríca github
-      console.log(initialKeys)
-      // console.log((new Date().getTime() - initial)/1000);
 
       setUser({ ...user, keys: initialKeys });
       const public_keys_form_json = { cipher: initialKeys.cipher.public, sign: initialKeys.sign.public };
@@ -194,8 +169,7 @@ function SignUp({setUser,setIsLogged}) {
       const ct_private_keys_form_json = await simetricCipher(JSON.stringify(private_keys_form_json),
         hexToBytes(initialKeys.exported_github_key),
         new Uint8Array(12));
-      // console.log(ct_private_keys_form_json);
-      // console.log((new Date().getTime() - initial)/1000);
+
       setFormData({
         ...formData,
         public_keys_form: JSON.stringify(public_keys_form_json),
@@ -291,7 +265,7 @@ function SignUp({setUser,setIsLogged}) {
               const newSrc = URL.createObjectURL(file);
               console.log(e.currentTarget.files);
               setFormData({ ...formData, img: file })
-              // console.log(newSrc)
+
               setPrevSrc(newSrc);
             }}
           />

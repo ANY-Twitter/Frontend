@@ -53,10 +53,8 @@ function SendMessage(props) {
     }
 
     const sendMessage = async () => {
-        console.log(keysRaw);
 
         const { ct, signedHash } = await cipher(user, message, keysRaw.cipher);
-        // console.log(ct,hash,signedHash);
 
 
         let resp_message = await fetch("http://localhost:8000/submitMessage", {
@@ -128,9 +126,6 @@ function SendMessage(props) {
                 // const verifierKeys = JSON.parse(window.atob((await verifier.json()).content));
                 const verifierKeys = (await verifier.json());
                     
-                console.log('a', verifierKeys);
-                console.log('b', JSON.stringify(respKeys));
-                console.log('b',JSON.stringify(verifierKeys) === JSON.stringify(respKeys));
                 if(verifier.status === 404 || JSON.stringify(verifierKeys) !== JSON.stringify(respKeys)){
                     setErrorUser('For security reasons cannot send message to this user');
                     return undefined;

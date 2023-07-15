@@ -56,10 +56,8 @@ function Messages(props) {
                         return undefined;
                     }
 
-                    // console.log('locales',currentLocalKeys);
 
                     if (currentLocalKeys[final_message.handle]) {
-                        // console.log('locales2',currentLocalKeys);
                         keys = currentLocalKeys[final_message.handle];
                         console.log('cached');
                     }

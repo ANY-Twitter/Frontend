@@ -111,9 +111,6 @@ export const genKey = async () => {
     public: sign_public_exported_key,
     private: sign_private_exported_key,
   };
-  // localStorage.setItem('private_key',JSON.stringify(cipher_private_exported_key));
-  // localStorage.setItem('public_key',JSON.stringify(cipher_public_exported_key));
-  // console.log(sign_private_exported_key);
 
   return { cipher, sign, exported_github_key: toHexString(new Uint8Array(exported_github_key)) };
 };
@@ -142,7 +139,6 @@ export const simetricCipher = async (pt, encrypt_key_raw, iv) => {
 }
 
 export const cipher = async (user, pt, encrypt_key_raw) => {
-  // console.log('pt: ', pt);
 
   const keys = user.keys;
 
@@ -164,7 +160,6 @@ export const cipher = async (user, pt, encrypt_key_raw) => {
 
   const sign_key_raw = keys.sign.private;
 
-  // console.log(keys.sign.private);
   const sign_key = await crypto.subtle.importKey(
     "jwk",
     sign_key_raw,
@@ -285,7 +280,6 @@ export const simetricDecrypt = async (ct, iv, key_raw) => {
     key,
     ct);
 
-    console.log(pt_raw);
 
     return new Uint8Array(pt_raw);
 
@@ -335,8 +329,6 @@ export const decrypt = async (user, ct) => {
   const pt = new Uint8Array(pt_raw);
   const userHandle = new Uint8Array(userHandle_raw);
 
-  // console.log(dec.decode(pt), pt.length);
-  // console.log(dec.decode(userHandle), userHandle.length);
 
   return { pt: dec.decode(pt), handle: dec.decode(userHandle) };
 };
