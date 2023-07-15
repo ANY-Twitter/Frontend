@@ -133,7 +133,7 @@ function SignIn({setUser, setIsLogged}) {
         console.log('Existo, pero no aqui');
         toggleAddNewDevice();
       }
-
+      
     }
   }
 

@@ -4,6 +4,14 @@ import { Link, Outlet } from "react-router-dom";
 import { genKey, genKeyPass, hexToBytes, simetricCipher, toHexString} from '../util/crypto';
 import {UserContext} from './Contexts'
 
+function verificador_clave(clave){
+  const longitud_minima = 6;
+  const caracter_especial_1 = /[`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/.test(clave);
+  const numero_1 = /\d/.test(clave);
+
+  return clave.length >= longitud_minima && caracter_especial_1 && numero_1;
+}
+
 function SignUp({setUser,setIsLogged}) {
 
   const user = useContext(UserContext);
@@ -53,8 +61,10 @@ function SignUp({setUser,setIsLogged}) {
     return files.map(async ([file,expectedValue]) => {
       let response = await fetch(baseUrl + file, {headers:{Authorization: "token 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"}, cache: "no-store" });
 
-      if(response.status === 404 || response.status === 400) 
+      if(response.status === 404 || response.status === 400) {
+        alert("Ingresa bien tu usuario Github")
         return 'Does not exists';
+      }
       
       let response_json;
 
@@ -109,19 +119,26 @@ function SignUp({setUser,setIsLogged}) {
 
     if (existErrors() || publicResult !== '' || privateResult !== '') {
 
-      // console.log('ke');
+      alert("Asegurate que las llaves han sido ingresadas correctamente.")
+      console.log('ke');
       // console.log('bien', existErrors());
       return undefined;
     }
 
-    const form = new FormData();
 
+    
+    const form = new FormData();
+    
     form.append('name', formData.name);
     form.append('handle', formData.handle);
     form.append('password', formData.clave);
     form.append('user_photo', formData.img);
     form.append('keys', JSON.stringify({ cipher: user.keys.cipher.public, sign: user.keys.sign.public }));
-
+    
+    if(!verificador_clave(formData.clave)){
+      alert("La contraseña debe tener 6 caracteres, de los cuales 1 debe ser un caracter especial y otro para un numero.")
+      return;
+    } 
     let resp = await fetch("http://127.0.0.1:8000/crearUsuario", {
       method: "POST",
       body: form,
