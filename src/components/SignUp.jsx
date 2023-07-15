@@ -58,28 +58,34 @@ function SignUp({setUser,setIsLogged}) {
                   ['private.json', formData.private_keys_form]];
     console.log(baseUrl);
 
-    return files.map(async ([file,expectedValue]) => {
-      let response = await fetch(baseUrl + file, {headers:{Authorization: "token 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"}, cache: "no-store" });
+    return files.map(async ([file, expectedValue]) => {
+      let response = await fetch(baseUrl + file, {
+        headers: {
+          //este codigo ya no es valido (se revoco).
+          // Authorization: "token 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"
+        },
+        cache: "no-store"
+      });
 
-      if(response.status === 404 || response.status === 400) {
+      if (response.status === 404 || response.status === 400) {
         alert("Ingresa bien tu usuario Github")
         return 'Does not exists';
       }
-      
+
       let response_json;
 
-      try{
+      try {
         const temp = await response.json();
         const data_raw = atob(temp.content);
         response_json = JSON.parse(data_raw);
-      }catch(error){
+      } catch (error) {
         // console.log(error);
         return 'Not expected value';
       }
 
       const response_string = JSON.stringify(response_json);
-      console.log('a',response_string);
-      console.log('b',expectedValue);
+      console.log('a', response_string);
+      console.log('b', expectedValue);
 
       // let mistmatch = '';
       // let expected = '';
@@ -109,10 +115,10 @@ function SignUp({setUser,setIsLogged}) {
   async function submit(e) {
     e.preventDefault();
 
-    const [publicResult,privateResult] = await Promise.all(await verifyGithubKeys());
+    const [publicResult, privateResult] = await Promise.all(await verifyGithubKeys());
 
-    console.log(publicResult,privateResult)
-    
+    console.log(publicResult, privateResult)
+
     setPublicKeyError(publicResult !== '');
     setPrivateKeyError(privateResult !== '');
 
@@ -126,36 +132,36 @@ function SignUp({setUser,setIsLogged}) {
     }
 
 
-    
+
     const form = new FormData();
-    
+
     form.append('name', formData.name);
     form.append('handle', formData.handle);
     form.append('password', formData.clave);
     form.append('user_photo', formData.img);
     form.append('keys', JSON.stringify({ cipher: user.keys.cipher.public, sign: user.keys.sign.public }));
-    
-    if(!verificador_clave(formData.clave)){
+
+    if (!verificador_clave(formData.clave)) {
       alert("La contraseña debe tener 6 caracteres, de los cuales 1 debe ser un caracter especial y otro para un numero.")
       return;
-    } 
+    }
     let resp = await fetch("http://127.0.0.1:8000/crearUsuario", {
       method: "POST",
       body: form,
     });
-        // console.log(JSON.stringify(user.keys));
+    // console.log(JSON.stringify(user.keys));
     if (resp.status === 200) {
       let response_user = await resp.json();
-  
+
       const salt = window.crypto.getRandomValues(new Uint8Array(16));
       const iv = window.crypto.getRandomValues(new Uint8Array(12));
-      const localKey = await genKeyPass(formData.clave,salt);
-      const ct_keys_raw = await simetricCipher(JSON.stringify(user.keys),hexToBytes(localKey),iv);
+      const localKey = await genKeyPass(formData.clave, salt);
+      const ct_keys_raw = await simetricCipher(JSON.stringify(user.keys), hexToBytes(localKey), iv);
       const ct_key = toHexString(ct_keys_raw);
-      setUser({...user,...response_user});
+      setUser({ ...user, ...response_user });
       setIsLogged(true);
       console.log(response_user);
-      localStorage.setItem(response_user.handle, JSON.stringify({keys:ct_key,iv:toHexString(iv),salt:toHexString(salt)}));
+      localStorage.setItem(response_user.handle, JSON.stringify({ keys: ct_key, iv: toHexString(iv), salt: toHexString(salt) }));
     }
   }
 
@@ -172,14 +178,14 @@ function SignUp({setUser,setIsLogged}) {
   useEffect(() => {
     const generateKeys = async () => {
       // let initial = new Date().getTime();
-      if(user.keys){
+      if (user.keys) {
         return undefined;
       }
       const initialKeys = await genKey();//agregar llave simetríca github
       console.log(initialKeys)
       // console.log((new Date().getTime() - initial)/1000);
 
-      setUser({...user,keys:initialKeys});
+      setUser({ ...user, keys: initialKeys });
       const public_keys_form_json = { cipher: initialKeys.cipher.public, sign: initialKeys.sign.public };
       const private_keys_form_json = { cipher: initialKeys.cipher.private, sign: initialKeys.sign.private };
 

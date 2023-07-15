@@ -106,7 +106,8 @@ function SendMessage(props) {
                 setErrorUser('Unexpect error');
             }
             else if (resp.status === 200) {
-                const githubUrl = `https://api.github.com/repos/${handleTo}/anytwitter/contents/public.json`;
+                const githubUrl = `https://raw.githubusercontent.com/${handleTo}/anytwitter/main/public.json`
+                // const githubUrl = `https://api.github.com/repos/${handleTo}/anytwitter/contents/public.json`;
                 const allUsers = await resp.json();
                 const userTo = findUser(allUsers,handleTo);
 
@@ -120,16 +121,17 @@ function SendMessage(props) {
                 const verifier = await fetch(githubUrl,
                     {
                         headers: {
-                            Authorization: "token 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"
+                            // Authorization: "token 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"
                         },
                         cache: "no-store"
                     });
-                const verifierKeys = await verifier.json();
+                // const verifierKeys = JSON.parse(window.atob((await verifier.json()).content));
+                const verifierKeys = (await verifier.json());
                     
-                console.log('a', window.atob(verifierKeys.content));
+                console.log('a', verifierKeys);
                 console.log('b', JSON.stringify(respKeys));
-                console.log('b', window.atob(verifierKeys.content) === JSON.stringify(respKeys));
-                if(verifier.status === 404 || JSON.stringify(JSON.parse(window.atob(verifierKeys.content))) !== JSON.stringify(respKeys)){
+                console.log('b',JSON.stringify(verifierKeys) === JSON.stringify(respKeys));
+                if(verifier.status === 404 || JSON.stringify(verifierKeys) !== JSON.stringify(respKeys)){
                     setErrorUser('For security reasons cannot send message to this user');
                     return undefined;
                 }

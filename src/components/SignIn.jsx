@@ -22,11 +22,15 @@ function SignIn({setUser, setIsLogged}) {
                   ['private.json', 'private']];
     let keys  = {cipher:{},sign:{}};
     let error = false;
-    let hola  = 0;
 
     for( const [fileName,type] of files){
       console.log(fileName);
-      let response = await fetch(baseUrl + fileName , {headers:{Authorization: "token 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"}, cache: "no-store" });
+      let response = await fetch(baseUrl + fileName, {
+        headers: {
+          // Authorization: "token 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"
+        },
+        cache: "no-store"
+      });
       let github_response = await response.json();
       let response_json = JSON.parse(window.atob(github_response.content));
       let signKey;
@@ -38,7 +42,7 @@ function SignIn({setUser, setIsLogged}) {
           hexToBytes(keys_ct),
           new Uint8Array(12),
           hexToBytes(githubKey)
-          );
+        );
 
         if (keys_raw) {
           const dec = new TextDecoder();
@@ -48,8 +52,8 @@ function SignIn({setUser, setIsLogged}) {
           signKey = key_json['sign'];
 
           error = false;
-          console.log('ke',error);
-        }else{
+          console.log('ke', error);
+        } else {
           error = true
           cipherKey = '';
           signKey = '';
@@ -73,28 +77,28 @@ function SignIn({setUser, setIsLogged}) {
 
     keys['exported_github_key'] = githubKey;
 
-    if(!error){
+    if (!error) {
 
-        const salt = window.crypto.getRandomValues(new Uint8Array(16));
-        const iv = window.crypto.getRandomValues(new Uint8Array(12));
-        const localKey = await genKeyPass(clave,salt);
-        const ct_keys_raw = await simetricCipher(JSON.stringify(keys),hexToBytes(localKey),iv);
-        const ct_key = toHexString(ct_keys_raw);
+      const salt = window.crypto.getRandomValues(new Uint8Array(16));
+      const iv = window.crypto.getRandomValues(new Uint8Array(12));
+      const localKey = await genKeyPass(clave, salt);
+      const ct_keys_raw = await simetricCipher(JSON.stringify(keys), hexToBytes(localKey), iv);
+      const ct_key = toHexString(ct_keys_raw);
 
-        // console.log(ct_key);
-
-
-        const dec = new TextDecoder();
-        const keys_raw = await simetricDecrypt(hexToBytes(ct_key), iv, hexToBytes(localKey));
-
-        // console.log('a',keys_raw);
-        // console.log(dec.decode(keys_raw));
+      // console.log(ct_key);
 
 
-        setIsLogged(true);
-        setUser((prevUser) => {return { ...prevUser, keys };});
-        navegar('/home');
-        localStorage.setItem(user.handle, JSON.stringify({keys:ct_key,iv:toHexString(iv),salt:toHexString(salt)}));
+      const dec = new TextDecoder();
+      const keys_raw = await simetricDecrypt(hexToBytes(ct_key), iv, hexToBytes(localKey));
+
+      // console.log('a',keys_raw);
+      // console.log(dec.decode(keys_raw));
+
+
+      setIsLogged(true);
+      setUser((prevUser) => { return { ...prevUser, keys }; });
+      navegar('/home');
+      localStorage.setItem(user.handle, JSON.stringify({ keys: ct_key, iv: toHexString(iv), salt: toHexString(salt) }));
     }
 
   }
@@ -115,7 +119,7 @@ function SignIn({setUser, setIsLogged}) {
     if (resp.status == 200) {
       const response_user = await resp.json();
       console.log(response_user, resp.status);
-      setUser((prevUser) => {return { ...prevUser, ...response_user };});
+      setUser((prevUser) => { return { ...prevUser, ...response_user }; });
 
       if (localStorage.getItem(response_user.handle)) {
         const storedUserDataString = localStorage.getItem(response_user.handle);
@@ -126,14 +130,14 @@ function SignIn({setUser, setIsLogged}) {
         const keys_raw = await simetricDecrypt(hexToBytes(ct_keys), hexToBytes(iv), hexToBytes(localKey));
         const keys = JSON.parse(dec.decode(keys_raw));
 
-        setUser((prevUser) => {return { ...prevUser, keys };});
+        setUser((prevUser) => { return { ...prevUser, keys }; });
         setIsLogged(true);
         navegar('/home');
       } else {
         console.log('Existo, pero no aqui');
         toggleAddNewDevice();
       }
-      
+
     }
   }
 
@@ -182,7 +186,7 @@ function SignIn({setUser, setIsLogged}) {
             <div className="button" onClick={loadKeys}>Accept</div>
             <div className="button" onClick={() => {
               toggleAddNewDevice();
-              setUser({keys:undefined});
+              setUser({ keys: undefined });
             }}>Cancel</div>
           </div>
         </div>
