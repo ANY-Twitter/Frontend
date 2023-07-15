@@ -17,6 +17,7 @@
     margin-right: 3%;
 }
 
+.message-sent-section,
 .confirm-section{
     position: absolute;
     top: 0;
@@ -29,6 +30,7 @@
     font-size: 1.38rem;
 }
 
+.message-sent-info,
 .confirm-section-info{
     height: 400px;
     background-color: white;
@@ -42,4 +44,18 @@
 
 .send-message  .button{
     font-size: 1.3rem;
+}
+
+
+.message-sent-section{
+    font-size: 2.1rem;
+}
+
+
+.message-sent-section .button {
+    padding: 8px 15px;
+}
+
+.message-sent-info > .button-section .button{
+    font-size: 2.1rem;
 }

@@ -11,11 +11,14 @@ function SendMessage(props) {
     const [encMessage, setEncMessage] = useState('');
     const [handleTo,setHandleTo] = useState('');
     const [newUser,setNewUser] = useState(false);
+    const [messageSent,setMessageSent] = useState(false);
     const [errorUser,setErrorUser] = useState('');
     const [keysRaw,setKeysRaw] = useState({});
 
 
     const toggleNewUser = () => setNewUser(!newUser);
+    const toggleMessageSent = () => setMessageSent(!messageSent);
+
     const updateMessage = (e) => {
         console.log(message)
         setMessage(e.currentTarget.value);
@@ -62,6 +65,7 @@ function SendMessage(props) {
 
         console.log('Se envio: ', message);
         setKeysRaw({});
+        toggleMessageSent();
     }
 
     const submit = async (e) => {
@@ -110,26 +114,6 @@ function SendMessage(props) {
                 <input className={`${errorUser !== '' ? 'invalid' : ''}`} onChange={updateHandleTo} type="text" name="to_user" id="to_user" value={handleTo} />
                 <textarea maxLength={maxSize()} name="user_message" onChange={updateMessage} value={message} id="user_message" cols="30" rows="10"></textarea>
                 <button onClick={submit} className='button'>Enviar</button>
-                {/* <div onClick={async () => { genKey(user); }} className="button">Enviar</div>
-                <div onClick={async () => {
-                    const {ct,hash, signedHash} = await cipher(user, message);
-                    console.log(ct);
-                }} className="button">Enviar2</div>
-                <div onClick={async () => {
-
-                    const { ct,  hash, signedHash } = await cipher(user, message);
-                    console.log(ct,hash,signedHash);
-
-                    const final_message = await decrypt(user, ct, hash );
-                    if(final_message){
-                        const isValid = await verifyFirm(final_message.pt,signedHash);
-
-                        console.log(isValid)
-                        console.log(final_message);
-
-
-                    }
-                }} className="button">Enviar3</div> */}
             </form>
             <div className={`confirm-section ${newUser ? '' : 'off'}`}>
                 <div className={"confirm-section-info"}>
@@ -154,6 +138,16 @@ function SendMessage(props) {
                             setKeysRaw({});
                             toggleNewUser();
                         }}>Cancel</div>
+                    </div>
+                </div>
+            </div>
+            <div className={`message-sent-section ${messageSent ? '' : 'off'}`}>
+                <div className={"message-sent-info"}>
+                    <div className="info">Mensaje enviado correctamente a {handleTo}</div>
+                    <div className="button-section">
+                        <div className="button" onClick={() => {
+                            toggleMessageSent();
+                        }}>Ok</div>
                     </div>
                 </div>
             </div>
