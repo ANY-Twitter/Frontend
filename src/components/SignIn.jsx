@@ -69,11 +69,8 @@ function SignIn({setUser, setIsLogged}) {
       keys['sign'][type] = signKey;
     }
 
-    // console.log('como es esto posible', hola);
-    // console.log('como es esto posible', keys);
     setGithubKeyError(error);
 
-    console.log(keys);
 
     keys['exported_github_key'] = githubKey;
 
@@ -85,14 +82,11 @@ function SignIn({setUser, setIsLogged}) {
       const ct_keys_raw = await simetricCipher(JSON.stringify(keys), hexToBytes(localKey), iv);
       const ct_key = toHexString(ct_keys_raw);
 
-      // console.log(ct_key);
 
 
       const dec = new TextDecoder();
       const keys_raw = await simetricDecrypt(hexToBytes(ct_key), iv, hexToBytes(localKey));
 
-      // console.log('a',keys_raw);
-      // console.log(dec.decode(keys_raw));
 
 
       setIsLogged(true);
@@ -134,7 +128,6 @@ function SignIn({setUser, setIsLogged}) {
         setIsLogged(true);
         navegar('/home');
       } else {
-        console.log('Existo, pero no aqui');
         toggleAddNewDevice();
       }
 
